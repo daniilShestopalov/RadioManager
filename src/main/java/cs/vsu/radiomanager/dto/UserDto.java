@@ -10,7 +10,8 @@ import jakarta.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class UserDto {
 
-    private int id;
+    @NotNull
+    private Long id;
 
     @NotBlank(message = "Login is required")
     private String login;
