@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class BroadcastSlotDto {
 
     @NotNull
-    private Long slotID;
+    private Long id;
 
     @NotNull
     private LocalDateTime startTime;

@@ -17,7 +17,7 @@ public class BroadcastSlot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long slotID;
+    private Long id;
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
