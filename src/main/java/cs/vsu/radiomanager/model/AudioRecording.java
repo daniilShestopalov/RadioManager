@@ -1,6 +1,6 @@
 package cs.vsu.radiomanager.model;
 
-import cs.vsu.radiomanager.model.enumerate.Status;
+import cs.vsu.radiomanager.model.enumerate.ApprovalStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,13 +27,13 @@ public class AudioRecording {
     @Column(name = "duration", nullable = false)
     private Double duration;
 
-    @Column(name = "duration", nullable = false)
+    @Column(name = "cost", nullable = false)
     private Double cost;
 
     @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "approval_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status approvalStatus;
+    private ApprovalStatus approvalStatus;
 
     @Column(name = "file_path", nullable = false)
     private String filePath;

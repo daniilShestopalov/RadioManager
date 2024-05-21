@@ -1,6 +1,6 @@
 package cs.vsu.radiomanager.dto;
 
-import cs.vsu.radiomanager.model.enumerate.Status;
+import cs.vsu.radiomanager.model.enumerate.ApprovalStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class AudioRecordingDto {
     private Double cost;
 
     @NotNull
-    private Status approvalStatus;
+    private ApprovalStatus approvalStatus;
 
     @NotNull
     private String filePath;
