@@ -13,21 +13,21 @@ public class UserDto {
     @NotNull
     private Long id;
 
-    @NotBlank(message = "Login is required")
+    @NotBlank
     private String login;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank
     private String password;
 
-    @NotBlank(message = "Name is required")
+    @NotBlank
     private String name;
 
-    @NotBlank(message = "Surname is required")
+    @NotBlank
     private String surname;
 
-    @NotNull(message = "Role cannot be null")
+    @NotNull
     private Double balance;
 
-    @NotNull(message = "Role cannot be null")
+    @NotNull
     private Role role;
 }
