@@ -14,9 +14,9 @@ public interface BroadcastSlotMapper {
 
     BroadcastSlot toEntity(BroadcastSlotDto broadcastSlotDto);
 
-    List<BroadcastSlotDto> toDto(List<BroadcastSlot> broadcastSlotList);
+    List<BroadcastSlotDto> toDtoList(List<BroadcastSlot> broadcastSlotList);
 
-    List<BroadcastSlot> toEntity(List<BroadcastSlotDto> broadcastSlotDtoList);
+    List<BroadcastSlot> toEntityList(List<BroadcastSlotDto> broadcastSlotDtoList);
 
     void updateEntityFromDto(BroadcastSlotDto broadcastSlotDto, @MappingTarget BroadcastSlot broadcastSlot);
 
