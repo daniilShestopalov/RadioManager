@@ -27,8 +27,8 @@ public class UserService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public List<UserDto> getAllUsersWithoutPassword() {
-        LOGGER.debug("Fetching all users without password");
+    public List<UserDto> getAllUsers() {
+        LOGGER.debug("Fetching all users");
         return mapper.toDtoList(userRep.findAll());
     }
 

@@ -19,7 +19,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AuthService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
 
     private final UserService userService;
 
@@ -30,54 +30,54 @@ public class AuthService {
     private final UserRep userRepository;
 
     public UserDto authenticate(@NonNull AuthUserDto authUserDto) {
-        logger.info("Authenticating user with login: {}", authUserDto.getLogin());
+        LOGGER.info("Authenticating user with login: {}", authUserDto.getLogin());
         Optional<User> userOptional = userRepository.findByLogin(authUserDto.getLogin());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(authUserDto.getPassword(), user.getPassword())) {
-                logger.info("Authentication successful for user: {}", user.getLogin());
+                LOGGER.info("Authentication successful for user: {}", user.getLogin());
                 return mapper.toDto(user);
             } else {
-                logger.warn("Authentication failed for user: {}", authUserDto.getLogin());
+                LOGGER.warn("Authentication failed for user: {}", authUserDto.getLogin());
             }
         } else {
-            logger.warn("User not found with login: {}", authUserDto.getLogin());
+            LOGGER.warn("User not found with login: {}", authUserDto.getLogin());
         }
         return null;
     }
 
     public boolean checkEmailExists(@NotNull String email) {
-        logger.info("Checking if email exists: {}", email);
+        LOGGER.info("Checking if email exists: {}", email);
         Optional<User> userOptional = userRepository.findByLogin(email);
         boolean exists = userOptional.isPresent();
         if (exists) {
-            logger.info("Email exists: {}", email);
+            LOGGER.info("Email exists: {}", email);
         } else {
-            logger.warn("Email does not exist: {}", email);
+            LOGGER.warn("Email does not exist: {}", email);
         }
         return exists;
     }
 
     public boolean updatePasswordById(Integer userId, String newPassword) {
-        logger.info("Updating password for user ID: {}", userId);
+        LOGGER.info("Updating password for user ID: {}", userId);
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             userService.updatePassword(userOptional.get().getId(), newPassword);
-            logger.info("Password updated successfully for user ID: {}", userId);
+            LOGGER.info("Password updated successfully for user ID: {}", userId);
             return true;
         }
-        logger.warn("User not found with ID: {}", userId);
+        LOGGER.warn("User not found with ID: {}", userId);
         return false;
     }
 
     public boolean registerUser(@NotNull UserDto userDto) {
-        logger.info("Registering user with ID: {}", userDto.getId());
+        LOGGER.info("Registering user with ID: {}", userDto.getId());
         Optional<User> userOptional = userRepository.findById(userDto.getId());
         if (userOptional.isEmpty()) {
             userService.createUser(userDto);
-            logger.info("User created successfully");
+            LOGGER.info("User created successfully");
         }
-        logger.warn("User already exists with ID: {}", userDto.getId());
+        LOGGER.warn("User already exists with ID: {}", userDto.getId());
         return false;
     }
 
