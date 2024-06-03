@@ -1,5 +1,6 @@
 package cs.vsu.radiomanager.service;
 
+import cs.vsu.radiomanager.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,17 @@ public class FileService {
 
     public byte[] getAudio(String filename) {
         return getFile(Path.of(audioFilesDir), filename);
+    }
+
+    public double getAudioDuration(MultipartFile file) throws IOException {
+        LOGGER.debug("Fetching audio duration from file: {}", file.getOriginalFilename());
+        if (!FileUtils.isAudioFile(file)) {
+            LOGGER.error("File is not an audio file");
+            throw new IllegalArgumentException("File is not an audio file");
+        }
+        double duration = FileUtils.getMp4Duration(file);
+        LOGGER.debug("Duration: {}", duration);
+        return duration;
     }
 
 }
