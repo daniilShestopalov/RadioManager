@@ -156,4 +156,5 @@ public class BroadcastSlotService {
         LOGGER.warn("No broadcast slot found with id: {}", id);
         return null;
     }
+
 }
