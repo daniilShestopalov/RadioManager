@@ -14,7 +14,6 @@ public interface BroadcastSlotRep extends JpaRepository<BroadcastSlot, Integer> 
 
     Optional<BroadcastSlot> findById(Long id);
     List<BroadcastSlot> findByStatus(Status status);
-    List<BroadcastSlot> findByStartTimeAndEndTime(LocalDateTime startTime, LocalDateTime endTime);
-    List<BroadcastSlot> findByStartTimeAndEndTimeAndStatus(LocalDateTime startTime, LocalDateTime endTime, Status status);
+    Optional<BroadcastSlot> findByStartTimeAndEndTime(LocalDateTime startTime, LocalDateTime endTime);
 
 }
