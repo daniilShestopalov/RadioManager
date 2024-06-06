@@ -1,0 +1,90 @@
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #ECF0F1;
+    color: #2C3E50;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    color: #2C3E50;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    background-color: #FFFFFF;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    text-align: left;
+    width: 350px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2C3E50;
+}
+
+.form-group input,
+.form-group select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #95A5A6;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.role-select {
+    height: 40px;
+}
+
+.btn {
+    background-color: #2980B9;
+    color: #FFFFFF;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn:hover {
+    background-color: #1B4F72;
+}
+
+.error {
+    color: #E74C3C;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.register-link {
+    margin-top: 15px;
+}
+
+.register-link p {
+    color: #2C3E50;
+}
+
+.register-link a {
+    color: #2980B9;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}

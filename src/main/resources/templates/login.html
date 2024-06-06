@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script>
+        function validateForm() {
+            const emailField = document.getElementById('login');
+            const email = emailField.value;
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            if (!emailPattern.test(email)) {
+                alert('Пожалуйста, введите корректный адрес электронной почты.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Авторизация</h1>
+    <form th:action="@{/login}" th:object="${authUserDto}" method="post" class="login-form" onsubmit="return validateForm()">
+        <div class="form-group">
+            <label for="login">Логин:</label>
+            <input type="email" id="login" th:field="*{login}" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" th:field="*{password}" required>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn">Войти</button>
+        </div>
+        <div th:if="${error}" th:text="${error}" class="error"></div>
+    </form>
+    <div class="register-link">
+        <p>Нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a></p>
+        <p>Забыли пароль? <a th:href="@{/forgot-password}">Сменить пароль</a></p>
+    </div>
+</div>
+</body>
+</html>

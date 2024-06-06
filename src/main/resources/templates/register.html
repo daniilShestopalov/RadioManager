@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Регистрация</h1>
+    <form th:action="@{/register}" th:object="${userDto}" method="post" class="login-form">
+        <div class="form-group">
+            <label for="login">Логин (Email):</label>
+            <input type="email" id="login" th:field="*{login}" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" th:field="*{password}" required>
+        </div>
+        <div class="form-group">
+            <label for="name">Имя:</label>
+            <input type="text" id="name" th:field="*{name}" required>
+        </div>
+        <div class="form-group">
+            <label for="surname">Фамилия:</label>
+            <input type="text" id="surname" th:field="*{surname}" required>
+        </div>
+        <div class="form-group">
+            <label for="role">Роль:</label>
+            <select id="role" th:field="*{role}" class="role-select" required>
+                <option th:each="role : ${rolesMap}"
+                        th:value="${role.key}" th:text="${role.value}">Роль</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn">Зарегистрироваться</button>
+        </div>
+        <div th:if="${error}" th:text="${error}" class="error"></div>
+    </form>
+</div>
+</body>
+</html>
