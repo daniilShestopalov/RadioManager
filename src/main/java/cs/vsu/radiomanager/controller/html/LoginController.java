@@ -4,7 +4,10 @@ import cs.vsu.radiomanager.dto.UserDto;
 import cs.vsu.radiomanager.dto.auth.AuthUserDto;
 import cs.vsu.radiomanager.dto.auth.PasswordResetDto;
 import cs.vsu.radiomanager.model.enumerate.Role;
+import cs.vsu.radiomanager.security.JwtProvider;
 import cs.vsu.radiomanager.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,8 @@ public class LoginController {
 
     private AuthService authService;
 
+    private JwtProvider jwtProvider;
+
     @GetMapping("/login")
     public String loginPage(Model model) {
         LOGGER.info("Navigating to login page");
@@ -33,10 +38,16 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute AuthUserDto authUserDto, Model model) {
+    public String login(@ModelAttribute AuthUserDto authUserDto, Model model, HttpServletResponse response) {
         LOGGER.info("Attempting to authenticate user: {}", authUserDto.getLogin());
         var userDto = authService.authenticate(authUserDto);
         if (userDto != null) {
+            String token = jwtProvider.generateToken(userDto);
+            Cookie cookie = new Cookie("jwt", token);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+            LOGGER.info("Created JWT cookie : {}", token);
             LOGGER.debug("Authentication successful for user: {}", authUserDto.getLogin());
             return "redirect:/home";
         } else {
