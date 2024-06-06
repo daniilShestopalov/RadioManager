@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class UserDto {
 
-    @NotNull
+
     private Long id;
 
     @NotBlank
