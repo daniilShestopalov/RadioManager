@@ -49,7 +49,7 @@ public class LoginController {
             response.addCookie(cookie);
             LOGGER.info("Created JWT cookie : {}", token);
             LOGGER.debug("Authentication successful for user: {}", authUserDto.getLogin());
-            return "redirect:/home";
+            return "redirect:/user/home";
         } else {
             LOGGER.warn("Authentication failed for user: {}", authUserDto.getLogin());
             model.addAttribute("error", "Invalid username or password");
@@ -61,7 +61,6 @@ public class LoginController {
     public String registerPage(Model model) {
         LOGGER.info("Navigating to register page");
         UserDto userDto = new UserDto();
-        userDto.setId(0L); // Устанавливаем id по умолчанию
         model.addAttribute("userDto", userDto);
 
         Map<String, String> rolesMap = new HashMap<>();
