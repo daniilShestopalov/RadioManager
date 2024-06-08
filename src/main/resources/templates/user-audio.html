@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Аудиозаписи</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/audio.css}">
+    <link rel="icon" type="image/x-icon" href="/image/log.ico">
+</head>
+<body>
+<div th:replace="~{user-navbar :: navbar}"></div>
+<div class="audio-container">
+    <h1 class="audio-header">Аудиозаписи</h1>
+    <form class="upload-form" id="uploadForm" th:action="@{/user/audio/upload}" method="post" enctype="multipart/form-data">
+        <div class="file-input-wrapper">
+            <label for="file" class="custom-file-upload btn">Выберите аудиофайл</label>
+            <input type="file" id="file" name="file" accept=".mp3" required>
+        </div>
+    </form>
+    <table class="audio-table">
+        <thead>
+        <tr>
+            <th>Имя файла</th>
+            <th>Стоимость</th>
+            <th>Статус утверждения</th>
+            <th>Файл</th>
+            <th>Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="audio : ${audioList}">
+            <td th:text="${audio.filePath}">Имя файла</td>
+            <td th:text="${audio.cost} + ' ₽'">Стоимость</td>
+            <td th:text="${statusMap[audio.approvalStatus.name]}">Статус утверждения</td>
+            <td>
+                <audio controls th:src="@{/user/audio/{filePath}(filePath=${audio.filePath})}"></audio>
+            </td>
+            <td>
+                <form th:action="@{/user/audio/delete/{id}(id=${audio.id})}" method="post">
+                    <button type="submit" class="delete-btn">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    document.querySelector('.custom-file-upload').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.querySelector('#file').click();
+    });
+
+    document.querySelector('#file').addEventListener('change', function() {
+        document.getElementById('uploadForm').submit();
+    });
+</script>
+</body>
+</html>
