@@ -157,4 +157,12 @@ public class BroadcastSlotService {
         return null;
     }
 
+    public List<BroadcastSlotDto> getBroadcastSlotsByMonth(int year, int month) {
+        LOGGER.debug("Fetching broadcast slots for year: {} and month: {}", year, month);
+        LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime end = start.plusMonths(1);
+        List<BroadcastSlot> slots = broadcastSlotRep.findByStartTimeBetween(start, end);
+        return mapper.toDtoList(slots);
+    }
+
 }
