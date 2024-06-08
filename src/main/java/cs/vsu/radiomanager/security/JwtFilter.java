@@ -47,4 +47,14 @@ public class JwtFilter extends GenericFilterBean {
         }
         return null;
     }
+
+    public Long getUserId(HttpServletRequest request) {
+        String token = getTokenFromCookie(request);
+
+        if (token == null) {
+            return null;
+        }
+
+        return jwtProvider.getUserIdFromToken(token);
+    }
 }

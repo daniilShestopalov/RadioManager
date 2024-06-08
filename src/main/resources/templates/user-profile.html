@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body>
+<div th:replace="~{user-navbar :: navbar}"></div>
+<div class="container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <img src="https://via.placeholder.com/150" alt="Avatar" class="profile-avatar">
+            <div class="profile-info">
+                <h2 th:text="${user.login}">user_login</h2>
+                <p th:text="${user.role}">Роль</p>
+            </div>
+        </div>
+        <div class="profile-details">
+            <div class="profile-row">
+                <div class="profile-label">Имя</div>
+                <div class="profile-value">
+                    <label>
+                        <input type="text" th:value="${user.name}" readonly>
+                    </label>
+                </div>
+            </div>
+            <div class="profile-row">
+                <div class="profile-label">Фамилия</div>
+                <div class="profile-value">
+                    <label>
+                        <input type="text" th:value="${user.surname}" readonly>
+                    </label>
+                </div>
+            </div>
+            <div class="profile-row">
+                <div class="profile-label">Баланс</div>
+                <div class="profile-value">
+                    <label>
+                        <input type="text" th:value="${user.balance}" readonly>
+                    </label> ₽
+                </div>
+            </div>
+        </div>
+        <div class="profile-actions">
+            <a href="/user/transactions" class="btn">История транзакций</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
+    margin-top: 20px; /* Add margin-top to separate from the navbar */
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.profile-info h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.profile-info p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.profile-details {
+    width: 100%;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profile-label {
+    font-weight: bold;
+    width: 20%;
+}
+
+.profile-value {
+    width: 75%;
+    display: flex;
+    align-items: center;
+}
+
+.profile-value input {
+    width: calc(100% - 20px); /* Adjust width considering padding for currency symbol */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    margin-right: 10px; /* Margin for currency symbol */
+}
