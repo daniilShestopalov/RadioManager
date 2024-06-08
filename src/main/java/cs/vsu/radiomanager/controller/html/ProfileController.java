@@ -1,5 +1,6 @@
 package cs.vsu.radiomanager.controller.html;
 
+import cs.vsu.radiomanager.dto.NameDto;
 import cs.vsu.radiomanager.dto.TransactionDto;
 import cs.vsu.radiomanager.dto.UserDto;
 import cs.vsu.radiomanager.security.JwtFilter;
@@ -26,8 +27,6 @@ public class ProfileController {
     private final UserService userService;
 
     private final TransactionService transactionService;
-
-    private final JwtProvider jwtProvider;
 
     private final JwtFilter jwtFilter;
 
@@ -57,7 +56,11 @@ public class ProfileController {
 
         List<TransactionDto> transactions = transactionService.getTransactionsByUserId(userId);
 
+        List<NameDto> admins = transactions.stream()
+                .map(t -> transactionService.getNameById(t.getAdminId()))
+                .toList();
         model.addAttribute("transactions", transactions);
+        model.addAttribute("admins", admins);
         LOGGER.info("Transaction page accessed for user: {}", userId);
         return "user-transactions";
     }

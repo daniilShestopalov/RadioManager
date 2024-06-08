@@ -1,0 +1,46 @@
+.transaction-container {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 1000px; /* Увеличим ширину контейнера */
+}
+
+.transaction-header {
+    text-align: center;
+    font-size: 28px; /* Увеличим размер шрифта */
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2C3E50;
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px; /* Увеличим размер шрифта таблицы */
+}
+
+.transaction-table th, .transaction-table td {
+    padding: 15px; /* Увеличим отступы */
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.transaction-table th {
+    background-color: #2C3E50;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.transaction-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.transaction-table tr:hover {
+    background-color: #ddd;
+}
+
+.transaction-table td {
+    color: #2C3E50;
+}
