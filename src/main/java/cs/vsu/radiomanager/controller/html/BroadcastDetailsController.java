@@ -56,14 +56,17 @@ public class BroadcastDetailsController {
         model.addAttribute("statusMap", statusMap);
 
         BroadcastSlotDto broadcastSlot = broadcastSlotService.getBroadcastSlotById(slotId);
+        model.addAttribute("broadcastSlot", broadcastSlot);
+
         if (broadcastSlot.getStatus().equals(Status.OCCUPIED)) {
-            //TODO
+            PlacementDto placementDto = placementService.getByBroadcastSlotId(slotId);
+            AudioRecordingDto audioRecordingDto = audioRecordingService.getRecordingById(placementDto.getAudioRecordingId());
+            model.addAttribute("audioRecording", audioRecordingDto);
             return "occupied-details";
         }
 
         List<AudioRecordingDto> availableAudios = audioRecordingService.getRecordingByStatusAndUserId(ApprovalStatus.APPROVED, userId);
 
-        model.addAttribute("broadcastSlot", broadcastSlot);
         model.addAttribute("availableAudios", availableAudios);
         model.addAttribute("userId", userId);
 
