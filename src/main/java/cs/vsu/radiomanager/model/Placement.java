@@ -19,11 +19,11 @@ public class Placement {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "slot_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "slot_id", referencedColumnName = "id", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private BroadcastSlot broadcastSlot;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "audio_id", referencedColumnName = "id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private AudioRecording audioRecording;

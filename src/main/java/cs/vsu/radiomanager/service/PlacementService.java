@@ -36,13 +36,13 @@ public class PlacementService {
     }
 
     public List<PlacementDto> getByPlacementDate(LocalDateTime date) {
-        LOGGER.debug("Fetching placement by date {}", date);
+        LOGGER.debug("Fetching placements by date {}", date);
         return mapper.toDtoList(placementRep.findByPlacementDate(date));
     }
 
-    public PlacementDto getByAudioRecordingId(Long id) {
-        LOGGER.debug("Fetching placement by audio recording id {}", id);
-        return mapper.toDto(placementRep.findByAudioRecordingId(id).orElse(null));
+    public List<PlacementDto> getByAudioRecordingId(Long id) {
+        LOGGER.debug("Fetching placements by audio recording id {}", id);
+        return mapper.toDtoList(placementRep.findByAudioRecordingId(id));
     }
 
     public PlacementDto getByBroadcastSlotId(Long id) {

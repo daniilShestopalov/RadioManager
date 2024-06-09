@@ -81,6 +81,11 @@ public class BroadcastDetailsController {
     public String attachAudioToSlot(@RequestParam Long slotId, @RequestParam Long audioId, @RequestParam Long userId, Model model) {
         LOGGER.info("Attaching audio recording with id: {} to broadcast slot with id: {} for user with id: {}", audioId, slotId, userId);
 
+        Map<String, String> statusMap = new HashMap<>();
+        statusMap.put(Status.AVAILABLE.name(), "Доступно");
+        statusMap.put(Status.OCCUPIED.name(), "Занято");
+        model.addAttribute("statusMap", statusMap);
+
         BroadcastSlotDto broadcastSlot = broadcastSlotService.getBroadcastSlotById(slotId);
         AudioRecordingDto audioRecording = audioRecordingService.getRecordingById(audioId);
         UserDto user = userService.getUserById(userId);
@@ -90,13 +95,30 @@ public class BroadcastDetailsController {
 
         if (balance >= cost) {
             LOGGER.info("Sufficient funds available. Updating user balance.");
-            userService.updateBalance(userId, balance - cost);
         } else {
             LOGGER.warn("Insufficient funds for attaching audio recording. Current balance: {}, cost of audio recording: {}", balance, cost);
             model.addAttribute("error", "Insufficient funds for attaching audio recording.");
+            model.addAttribute("broadcastSlot", broadcastSlot);
+            List<AudioRecordingDto> availableAudios = audioRecordingService.getRecordingByStatusAndUserId(ApprovalStatus.APPROVED, userId);
+            model.addAttribute("availableAudios", availableAudios);
+            model.addAttribute("userId", userId);
             return "details";
         }
 
+        if (Duration
+                .ofSeconds(Math.round(audioRecording.getDuration()))
+                .compareTo(
+                        Duration
+                                .between(broadcastSlot.getStartTime(), broadcastSlot.getEndTime())
+                ) >= 0) {
+            LOGGER.warn("File is too long");
+            model.addAttribute("error", "File is too long");
+            model.addAttribute("broadcastSlot", broadcastSlot);
+            List<AudioRecordingDto> availableAudios = audioRecordingService.getRecordingByStatusAndUserId(ApprovalStatus.APPROVED, userId);
+            model.addAttribute("availableAudios", availableAudios);
+            model.addAttribute("userId", userId);
+            return "details";
+        }
         LocalDateTime newEndTime = broadcastSlot
                 .getStartTime()
                 .plus(Duration.ofSeconds(Math.round(audioRecording.getDuration())));
@@ -105,6 +127,7 @@ public class BroadcastDetailsController {
         BroadcastSlotDto updatedSlot = broadcastSlotService.splitBroadcastSlot(slotId, newEndTime);
 
         if (updatedSlot != null) {
+
             PlacementDto placementDto = new PlacementDto();
             placementDto.setBroadcastSlotId(updatedSlot.getId());
             placementDto.setAudioRecordingId(audioId);
@@ -112,10 +135,15 @@ public class BroadcastDetailsController {
 
             placementService.createPlacement(placementDto);
             LOGGER.info("Audio recording successfully attached to broadcast slot. Created new slot with id: {}", updatedSlot.getId());
+            userService.updateBalance(userId, balance - cost);
             return "redirect:/user/broadcast-slots";
         } else {
             LOGGER.error("Error splitting broadcast slot.");
             model.addAttribute("error", "Error splitting broadcast slot.");
+            model.addAttribute("broadcastSlot", broadcastSlot);
+            List<AudioRecordingDto> availableAudios = audioRecordingService.getRecordingByStatusAndUserId(ApprovalStatus.APPROVED, userId);
+            model.addAttribute("availableAudios", availableAudios);
+            model.addAttribute("userId", userId);
             return "details";
         }
     }
