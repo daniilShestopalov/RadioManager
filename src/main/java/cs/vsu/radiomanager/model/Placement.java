@@ -24,7 +24,7 @@ public class Placement {
     private BroadcastSlot broadcastSlot;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "audio id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "audio_id", referencedColumnName = "id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private AudioRecording audioRecording;
 

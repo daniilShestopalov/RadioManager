@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -162,7 +164,10 @@ public class BroadcastSlotService {
         LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime end = start.plusMonths(1);
         List<BroadcastSlot> slots = broadcastSlotRep.findByStartTimeBetween(start, end);
-        return mapper.toDtoList(slots);
+        return slots.stream()
+                .sorted(Comparator.comparing(BroadcastSlot::getStartTime))
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
 }

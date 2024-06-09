@@ -25,9 +25,9 @@
             <h2 th:text="${day.key}">День недели, Дата, Неделя</h2>
             <ul>
                 <li th:each="slot : ${day.value}">
-                    <span th:text="${#temporals.format(slot.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(slot.endTime, 'HH:mm')}">Время</span>
+                    <span th:text="${#temporals.format(slot.startTime, 'HH:mm:ss')} + ' - ' + ${#temporals.format(slot.endTime, 'HH:mm:ss')}">Время</span>
                     <span th:text="'Статус: ' + ${statusMap[slot.status.name()]}">Статус</span>
-                    <button class="btn-details">Подробней</button>
+                    <button class="btn-details" th:onclick="'window.location.href=\'/details/' + ${slot.id} + '\';'">Подробней</button>
                 </li>
             </ul>
         </div>
