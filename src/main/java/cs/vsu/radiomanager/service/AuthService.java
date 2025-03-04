@@ -58,6 +58,17 @@ public class AuthService {
         return exists;
     }
 
+    public boolean updatePasswordByLogin(@NotNull String login, @NotNull String password) {
+        LOGGER.info("Updating password by login: {}", login);
+        Optional<User> userOptional = userRepository.findByLogin(login);
+        if (userOptional.isPresent()) {
+            userService.updatePassword(userOptional.get().getId(), password);
+            LOGGER.info("Password updated successfully");
+            return true;
+        }
+        return false;
+    }
+
     public boolean updatePasswordById(Integer userId, String newPassword) {
         LOGGER.info("Updating password for user ID: {}", userId);
         Optional<User> userOptional = userRepository.findById(userId);
@@ -76,6 +87,7 @@ public class AuthService {
         if (userOptional.isEmpty()) {
             userService.createUser(userDto);
             LOGGER.info("User created successfully");
+            return true;
         }
         LOGGER.warn("User already exists with ID: {}", userDto.getId());
         return false;

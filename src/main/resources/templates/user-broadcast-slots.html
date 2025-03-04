@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Пробелы в вещании</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/broadcast-slots.css}">
+    <link rel="icon" type="image/x-icon" href="/image/log.ico">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.day-section h2').forEach(function(dayHeader) {
+                let text = dayHeader.textContent;
+                dayHeader.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+            });
+        });
+    </script>
+</head>
+<body>
+<div th:replace="~{user-navbar :: navbar}"></div>
+<div class="slot-container">
+    <h1 class="slot-header">Пробелы в вещании за текущий месяц</h1>
+    <div class="day-section" th:each="day : ${slotsByDay}">
+        <div class="day-section">
+            <h2 th:text="${day.key}">День недели, Дата, Неделя</h2>
+            <ul>
+                <li th:each="slot : ${day.value}">
+                    <span th:text="${#temporals.format(slot.startTime, 'HH:mm:ss')} + ' - ' + ${#temporals.format(slot.endTime, 'HH:mm:ss')}">Время</span>
+                    <span th:text="'Статус: ' + ${statusMap[slot.status.name()]}">Статус</span>
+                    <button class="btn-details" th:onclick="'window.location.href=\'/details/' + ${slot.id} + '\';'">Подробней</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

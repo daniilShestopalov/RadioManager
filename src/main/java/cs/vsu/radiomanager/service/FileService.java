@@ -66,12 +66,24 @@ public class FileService {
     public double getAudioDuration(MultipartFile file) throws IOException {
         LOGGER.debug("Fetching audio duration from file: {}", file.getOriginalFilename());
         if (!FileUtils.isAudioFile(file)) {
-            LOGGER.error("File is not an audio file");
+            LOGGER.error("File is not an audio file {}", file.getContentType());
             throw new IllegalArgumentException("File is not an audio file");
         }
-        double duration = FileUtils.getMp4Duration(file);
+        double duration = FileUtils.getMp3Duration(file);
         LOGGER.debug("Duration: {}", duration);
         return duration;
+    }
+
+    public boolean deleteAudio(String filename) {
+        try {
+            Path filepath = Path.of(audioFilesDir).resolve(filename);
+            Files.deleteIfExists(filepath);
+            LOGGER.info("File deleted: {}", filepath);
+            return true;
+        } catch (IOException e) {
+            LOGGER.error("Error deleting file: {}", e.getMessage());
+            throw new RuntimeException("Error deleting file", e);
+        }
     }
 
 }

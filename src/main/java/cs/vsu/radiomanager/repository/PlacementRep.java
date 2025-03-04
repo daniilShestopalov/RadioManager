@@ -13,7 +13,7 @@ public interface PlacementRep extends JpaRepository<Placement, Integer> {
 
     Optional<Placement> findById(Long id);
     List<Placement> findByPlacementDate(LocalDateTime placementDate);
-    Optional<Placement> findByAudioRecordingId(Long audioRecordingId);
+    List<Placement> findByAudioRecordingId(Long audioRecordingId);
     Optional<Placement> findByBroadcastSlotId(Long broadcastSlotId);
 
 }

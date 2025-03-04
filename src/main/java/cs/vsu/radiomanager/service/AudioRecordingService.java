@@ -17,6 +17,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AudioRecordingService {
 
+    private static final Double SEC_COST = 100.0;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AudioRecordingService.class);
 
     private AudioRecordingRep audioRecordingRep;
@@ -115,5 +117,10 @@ public class AudioRecordingService {
             LOGGER.error("Error updating recording status {}", id, e);
             throw new RuntimeException("Error updating recording status: " + id, e);
         }
+    }
+
+    public Double getCostByDuration(Double duration) {
+
+        return SEC_COST * duration;
     }
 }

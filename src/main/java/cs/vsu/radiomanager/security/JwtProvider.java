@@ -79,8 +79,8 @@ public class JwtProvider {
                 .getPayload();
     }
 
-    /*public Integer getUserIdFromToken(@NonNull String token) {
+    public Long getUserIdFromToken(@NonNull String token) {
         Claims claims = getClaims(token);
-        return Integer.parseInt(claims.getSubject());
-    }*/
+        return Long.parseLong(claims.getSubject());
+    }
 }

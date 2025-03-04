@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали занятого слота вещания</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/details.css}">
+    <link rel="icon" type="image/x-icon" href="/image/log.ico">
+</head>
+<body>
+<div th:replace="~{user-navbar :: navbar}"></div>
+<div class="container">
+    <div class="slot-details">
+        <h1 class="slot-header">Детали слота вещания</h1>
+        <p>Начало: <span th:text="${#temporals.format(broadcastSlot.startTime, 'HH:mm:ss')}"></span></p>
+        <p>Окончание: <span th:text="${#temporals.format(broadcastSlot.endTime, 'HH:mm:ss')}"></span></p>
+        <p>Статус: <span th:text="${statusMap[broadcastSlot.status.name()]}"></span></p>
+
+        <h2>Прикрепленный аудиофайл</h2>
+        <p>Название файла: <span th:text="${audioRecording.filePath}"></span></p>
+        <audio controls th:src="@{/user/audio/{filePath}(filePath=${audioRecording.filePath})}"></audio>
+    </div>
+</div>
+</body>
+</html>

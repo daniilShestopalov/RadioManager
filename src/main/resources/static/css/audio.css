@@ -1,0 +1,98 @@
+.audio-container {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+}
+
+.audio-header {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2C3E50;
+}
+
+.audio-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px;
+}
+
+.audio-table th, .audio-table td {
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.audio-table th {
+    background-color: #2C3E50;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.audio-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.audio-table tr:hover {
+    background-color: #ddd;
+}
+
+.audio-table td {
+    color: #2C3E50;
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.upload-form label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+    display: block;
+    text-align: center;
+}
+
+.file-input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.file-input-wrapper input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    background-color: #2980B9;
+    color: #FFFFFF;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.custom-file-upload:hover {
+    background-color: #1B4F72;
+}
+
+.delete-btn {
+    background-color: #E74C3C;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #C0392B;
+}
