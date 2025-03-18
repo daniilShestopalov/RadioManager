@@ -33,7 +33,7 @@ public class AudioController {
     private final JwtFilter jwtFilter;
 
     @GetMapping("/user/audio")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String audioPage(HttpServletRequest request, Model model) {
 
         Long userId = jwtFilter.getUserId(request);
@@ -60,7 +60,7 @@ public class AudioController {
     }
 
     @PostMapping("/user/audio/upload")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String uploadAudio(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         Long userId = jwtFilter.getUserId(request);
         LOGGER.info("Type is {}", file.getContentType());
@@ -79,7 +79,7 @@ public class AudioController {
     }
 
     @PostMapping("/user/audio/delete/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String deleteAudio(@PathVariable Long id, HttpServletRequest request) {
         Long userId = jwtFilter.getUserId(request);
         AudioRecordingDto audio = audioRecordingService.getRecordingById(id);

@@ -14,7 +14,7 @@ public class HomeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
     @GetMapping("/user/home")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String userHomePage() {
         LOGGER.info("Navigating to user home page");
         return "user-home";

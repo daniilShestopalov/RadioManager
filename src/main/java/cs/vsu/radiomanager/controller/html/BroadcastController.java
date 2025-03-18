@@ -30,7 +30,7 @@ public class BroadcastController {
     private final BroadcastSlotService broadcastSlotService;
 
     @GetMapping("/user/broadcast-slots")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String broadcastSlotsPage(Model model) {
 
         LocalDate now = LocalDate.now();

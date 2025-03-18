@@ -4,7 +4,6 @@ import cs.vsu.radiomanager.dto.NameDto;
 import cs.vsu.radiomanager.dto.TransactionDto;
 import cs.vsu.radiomanager.dto.UserDto;
 import cs.vsu.radiomanager.security.JwtFilter;
-import cs.vsu.radiomanager.security.JwtProvider;
 import cs.vsu.radiomanager.service.TransactionService;
 import cs.vsu.radiomanager.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +30,7 @@ public class ProfileController {
     private final JwtFilter jwtFilter;
 
     @GetMapping("/user/profile")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String userProfilePage(HttpServletRequest request, Model model) {
 
         Long userId = jwtFilter.getUserId(request);
@@ -49,7 +48,7 @@ public class ProfileController {
     }
 
     @GetMapping("/user/transactions")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String userTransactionsPage(HttpServletRequest request, Model model) {
 
         Long userId = jwtFilter.getUserId(request);
