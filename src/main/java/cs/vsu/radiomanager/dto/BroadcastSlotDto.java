@@ -23,4 +23,7 @@ public class BroadcastSlotDto {
     @NotNull
     private Status status;
 
+    @NotNull
+    private Long radioStationId;
+
 }
