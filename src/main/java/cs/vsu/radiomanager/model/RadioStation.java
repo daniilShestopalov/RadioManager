@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "radio_station")
 @Getter
@@ -22,7 +24,7 @@ public class RadioStation {
 
     @Digits(integer = 3, fraction = 1)
     @Column(name = "frequency", nullable = false, precision = 4, scale = 1)
-    private Double frequency;
+    private BigDecimal frequency;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", referencedColumnName = "id" ,nullable = false)
