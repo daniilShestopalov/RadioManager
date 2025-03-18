@@ -1,14 +1,14 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.5'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.2.12' //old 3.2.5
+    id 'io.spring.dependency-management' version '1.1.6' //old 1.1.4
 }
 
 group = 'cs.vsu'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = '21'
 }
 
 configurations {
@@ -26,22 +26,22 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
+    //implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     implementation 'org.flywaydb:flyway-core'
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
-    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'//0.12.5
+    implementation 'jakarta.servlet:jakarta.servlet-api:6.1.0' // old implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    implementation 'org.mp4parser:isoparser:1.9.41'
+    implementation 'org.mp4parser:isoparser:1.9.56'//1.9.41
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
     implementation 'com.mpatric:mp3agic:0.9.1'
-    implementation 'net.bytebuddy:byte-buddy:1.14.7'
+    implementation 'net.bytebuddy:byte-buddy:1.15.11'//1.14.7
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'//0.12.5
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'//0.12.5
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     annotationProcessor 'org.projectlombok:lombok'
