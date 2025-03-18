@@ -2,6 +2,7 @@ package cs.vsu.radiomanager.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ public class RadioStationDto {
     @NotBlank
     private String name;
 
+    @Positive
     @NotNull
     private BigDecimal frequency;
 
