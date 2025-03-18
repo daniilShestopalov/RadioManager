@@ -8,6 +8,7 @@ import cs.vsu.radiomanager.repository.CityRep;
 import cs.vsu.radiomanager.repository.UserRep;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,6 +34,10 @@ public abstract class RadioStationMapper {
     public abstract List<RadioStationDto> toDtoList(List<RadioStation> radioStationList);
 
     public abstract List<RadioStation> toEntityList(List<RadioStationDto> radioStationDtoList);
+
+    @Mapping(target = "city", source = "cityId", qualifiedByName = "cityFromId")
+    @Mapping(target = "representative", source = "representativeId", qualifiedByName = "representativeFromId")
+    public abstract void updateEntityFromDto(RadioStationDto radioStationDto, @MappingTarget RadioStation radioStation);
 
     @Named("representativeFromId")
     protected User representativeFromId(Long representativeId) {
