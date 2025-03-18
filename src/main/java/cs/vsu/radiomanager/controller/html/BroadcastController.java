@@ -1,7 +1,6 @@
 package cs.vsu.radiomanager.controller.html;
 
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
-import cs.vsu.radiomanager.model.enumerate.Role;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.service.BroadcastSlotService;
 import lombok.AllArgsConstructor;
