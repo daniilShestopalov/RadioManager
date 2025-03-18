@@ -30,9 +30,9 @@ public abstract class RadioStationMapper {
     @Mapping(target = "representative", source = "representativeId", qualifiedByName = "representativeFromId")
     public abstract RadioStation toEntity(RadioStationDto radioStationDto);
 
-    public abstract List<RadioStationDto> toDto(List<RadioStation> radioStationList);
+    public abstract List<RadioStationDto> toDtoList(List<RadioStation> radioStationList);
 
-    public abstract List<RadioStation> toEntity(List<RadioStationDto> radioStationDtoList);
+    public abstract List<RadioStation> toEntityList(List<RadioStationDto> radioStationDtoList);
 
     @Named("representativeFromId")
     protected User representativeFromId(Long representativeId) {
