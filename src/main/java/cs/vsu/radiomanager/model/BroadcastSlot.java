@@ -12,7 +12,13 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "broadcast_slot")
+@Table(name = "broadcast_slot", uniqueConstraints = {
+        @UniqueConstraint(
+                name = "UNIQUE_BROADCAST_SLOT",
+                columnNames = {
+                        "start_time", "end_time", "radio_station_id"
+                })
+})
 @Getter
 @Setter
 public class BroadcastSlot {
