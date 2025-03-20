@@ -2,22 +2,38 @@ package cs.vsu.radiomanager.mapper;
 
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
 import cs.vsu.radiomanager.model.BroadcastSlot;
+import cs.vsu.radiomanager.model.RadioStation;
+import cs.vsu.radiomanager.repository.RadioStationRep;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface BroadcastSlotMapper {
+@Mapper(componentModel = "spring", uses = RadioStationRep.class)
+public abstract class BroadcastSlotMapper {
 
-    BroadcastSlotDto toDto(BroadcastSlot broadcastSlot);
+    @Autowired
+    protected RadioStationRep radioStationRep;
 
-    BroadcastSlot toEntity(BroadcastSlotDto broadcastSlotDto);
+    @Mapping(source = "radioStation.id", target = "radioStationId")
+    public abstract BroadcastSlotDto toDto(BroadcastSlot broadcastSlot);
 
-    List<BroadcastSlotDto> toDtoList(List<BroadcastSlot> broadcastSlotList);
+    @Mapping(target = "radioStation", source = "radioStationId", qualifiedByName = "radioStationFromId")
+    public abstract BroadcastSlot toEntity(BroadcastSlotDto broadcastSlotDto);
 
-    List<BroadcastSlot> toEntityList(List<BroadcastSlotDto> broadcastSlotDtoList);
+    public abstract List<BroadcastSlotDto> toDtoList(List<BroadcastSlot> broadcastSlotList);
 
-    void updateEntityFromDto(BroadcastSlotDto broadcastSlotDto, @MappingTarget BroadcastSlot broadcastSlot);
+    public abstract List<BroadcastSlot> toEntityList(List<BroadcastSlotDto> broadcastSlotDtoList);
+
+    @Mapping(target = "radioStation", source = "radioStationId", qualifiedByName = "radioStationFromId")
+    public abstract void updateEntityFromDto(BroadcastSlotDto broadcastSlotDto, @MappingTarget BroadcastSlot broadcastSlot);
+
+    @Named("radioStationFromId")
+    protected RadioStation radioStationFromId(Long id) {
+        return radioStationRep.findById(id).orElse(null);
+    }
 
 }
