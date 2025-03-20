@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface BroadcastSlotRep extends JpaRepository<BroadcastSlot, Integer> {
 
     Optional<BroadcastSlot> findById(Long id);
-    Optional<BroadcastSlot> findByStartTimeAndEndTimeAndRadioStation(LocalDateTime startTime, LocalDateTime endTime, RadioStation radioStation);
+    Optional<BroadcastSlot> findByStartTimeAndEndTimeAndRadioStationId(LocalDateTime startTime, LocalDateTime endTime, Long radioStationId);
     List<BroadcastSlot> findByStatus(Status status);
     Optional<BroadcastSlot> findByStartTimeAndEndTime(LocalDateTime startTime, LocalDateTime endTime);
     List<BroadcastSlot> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
