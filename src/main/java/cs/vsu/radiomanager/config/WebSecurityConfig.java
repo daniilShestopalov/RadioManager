@@ -35,8 +35,14 @@ public class WebSecurityConfig {
                                 "/forgot-password",
                                 "/reset-password",
                                 "/css/**"
-                        )
-                        .permitAll()
+                        ).permitAll()
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
