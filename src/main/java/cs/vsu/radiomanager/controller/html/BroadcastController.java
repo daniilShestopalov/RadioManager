@@ -6,6 +6,7 @@ import cs.vsu.radiomanager.service.BroadcastSlotService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@ConditionalOnProperty(
+        name = "old.api.enabled",
+        havingValue = "true",
+        matchIfMissing = false
+)
 @Controller
 @AllArgsConstructor
 public class BroadcastController {
