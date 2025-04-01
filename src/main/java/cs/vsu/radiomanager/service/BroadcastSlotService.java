@@ -41,13 +41,28 @@ public class BroadcastSlotService {
                 .orElse(null);
     }
 
+    public BroadcastSlotDto getBroadcastSlotByStartTimeAndEndTimeAndRadioStation(LocalDateTime startTime,
+                                                                                 LocalDateTime endTime,
+                                                                                 Long radioStationId) {
+        LOGGER.debug(
+                "Fetching broadcast slot by startTime and endTime and RadioStation: {}",
+                startTime.toString() + " --- " + endTime.toString() + "by radio station with id: " + radioStationId
+        );
+        return broadcastSlotRep.findByStartTimeAndEndTimeAndRadioStationId(startTime, endTime, radioStationId)
+                .map(mapper::toDto)
+                .orElse(null);
+    }
+
     public List<BroadcastSlotDto> getBroadcastSlotsByStatus(Status status) {
         LOGGER.debug("Fetching broadcast slot by status: {}", status);
         return mapper.toDtoList(broadcastSlotRep.findByStatus(status));
     }
 
     public BroadcastSlotDto getBroadcastSlotByStartTimeAndEndTime(LocalDateTime startTime, LocalDateTime endTime) {
-        LOGGER.debug("Fetching broadcast slot by startTime and endTime: {}", startTime.toString() + " --- " + endTime.toString());
+        LOGGER.debug(
+                "Fetching broadcast slot by startTime and endTime: {}",
+                startTime.toString() + " --- " + endTime.toString()
+        );
         return broadcastSlotRep.findByStartTimeAndEndTime(startTime, endTime)
                 .map(mapper::toDto)
                 .orElse(null);
@@ -74,7 +89,7 @@ public class BroadcastSlotService {
             LOGGER.info("Updated broadcast slot: {}", updatedBroadcastSlot);
             return mapper.toDto(updatedBroadcastSlot);
         }
-        LOGGER.warn("No broadcast slot found with id: {}", broadcastSlotDto.getId());
+        LOGGER.warn("No broadcast slot found for update with id: {}", broadcastSlotDto.getId());
         return null;
     }
 
@@ -88,7 +103,7 @@ public class BroadcastSlotService {
                 LOGGER.info("Deleted broadcast slot: {}", broadcastSlot);
                 return true;
             }
-            LOGGER.warn("No broadcast slot found with id: {}", id);
+            LOGGER.warn("No broadcast slot found for delete with id: {}", id);
             return false;
         } catch (Exception e) {
             LOGGER.error("Error deleting broadcast slot", e);
@@ -106,7 +121,7 @@ public class BroadcastSlotService {
             LOGGER.info("Updated broadcast slot status: {}", updatedBroadcastSlot);
             return mapper.toDto(updatedBroadcastSlot);
         }
-        LOGGER.warn("No broadcast slot found with id: {}", id);
+        LOGGER.warn("No broadcast slot found for update status with id: {}", id);
         return null;
     }
 
@@ -120,7 +135,7 @@ public class BroadcastSlotService {
             LOGGER.info("Updated broadcast slot endTime: {}", updatedBroadcastSlot);
             return mapper.toDto(updatedBroadcastSlot);
         }
-        LOGGER.warn("No broadcast slot found with id: {}", id);
+        LOGGER.warn("No broadcast slot found for update end time with id: {}", id);
         return null;
     }
 

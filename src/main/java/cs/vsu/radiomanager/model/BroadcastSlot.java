@@ -5,12 +5,20 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "broadcast_slot")
+@Table(name = "broadcast_slot", uniqueConstraints = {
+        @UniqueConstraint(
+                name = "UNIQUE_BROADCAST_SLOT",
+                columnNames = {
+                        "start_time", "end_time", "radio_station_id"
+                })
+})
 @Getter
 @Setter
 public class BroadcastSlot {
@@ -29,5 +37,10 @@ public class BroadcastSlot {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "radio_station_id", referencedColumnName = "id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private RadioStation radioStation;
 
 }

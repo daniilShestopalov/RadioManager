@@ -1,7 +1,6 @@
 package cs.vsu.radiomanager.controller.html;
 
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
-import cs.vsu.radiomanager.model.enumerate.Role;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.service.BroadcastSlotService;
 import lombok.AllArgsConstructor;
@@ -30,7 +29,7 @@ public class BroadcastController {
     private final BroadcastSlotService broadcastSlotService;
 
     @GetMapping("/user/broadcast-slots")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADVERTISER')")
     public String broadcastSlotsPage(Model model) {
 
         LocalDate now = LocalDate.now();

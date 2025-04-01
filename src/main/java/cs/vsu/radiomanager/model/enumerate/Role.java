@@ -1,6 +1,7 @@
 package cs.vsu.radiomanager.model.enumerate;
 
 public enum Role {
-    USER,
+    ADVERTISER,
+    RADIO_REPRESENTATIVE,
     ADMIN
 }

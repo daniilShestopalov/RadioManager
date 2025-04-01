@@ -65,7 +65,7 @@ public class LoginController {
 
         Map<String, String> rolesMap = new HashMap<>();
         rolesMap.put(Role.ADMIN.name(), "Администратор");
-        rolesMap.put(Role.USER.name(), "Пользователь");
+        rolesMap.put(Role.ADVERTISER.name(), "Рекламодатель");
         model.addAttribute("rolesMap", rolesMap);
 
         return "register";
