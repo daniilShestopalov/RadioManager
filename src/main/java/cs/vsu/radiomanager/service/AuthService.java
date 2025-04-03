@@ -70,7 +70,7 @@ public class AuthService {
         return false;
     }
 
-    public boolean updatePasswordById(Integer userId, String newPassword) {
+    public boolean updatePasswordById(Long userId, String newPassword) {
         LOGGER.info("Updating password for user ID: {}", userId);
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
