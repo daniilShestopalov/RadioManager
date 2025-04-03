@@ -1,0 +1,16 @@
+package cs.vsu.radiomanager.model.auth;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class PasswordResetRequestDto {
+
+    @NotBlank
+    @Email
+    private String email;
+
+}
