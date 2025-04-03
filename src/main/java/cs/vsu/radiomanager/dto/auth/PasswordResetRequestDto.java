@@ -1,4 +1,4 @@
-package cs.vsu.radiomanager.model.auth;
+package cs.vsu.radiomanager.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
