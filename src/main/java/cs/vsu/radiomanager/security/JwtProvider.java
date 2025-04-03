@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Component
 public class JwtProvider {
@@ -34,7 +37,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    /*public String generatePasswordResetToken(@NonNull Integer userId) {
+    public String generatePasswordResetToken(@NonNull Long userId) {
         Instant now = Instant.now();
         Instant expiryDate = now.plus(1, ChronoUnit.HOURS); // 1 hour
 
@@ -44,7 +47,7 @@ public class JwtProvider {
                 .expiration(Date.from(expiryDate))
                 .signWith(jwtAccessSecret, Jwts.SIG.HS256)
                 .compact();
-    }*/
+    }
 
     public boolean validateAccessToken(@NonNull String accessToken) {
         return validateToken(accessToken, jwtAccessSecret);
