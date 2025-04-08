@@ -141,9 +141,10 @@ public class CityController {
             boolean deleted = cityService.deleteCity(id);
             if (deleted) {
                 return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+            LOGGER.warn("City with ID {} not found for delete", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
         } catch (Exception e) {
             LOGGER.error("Error deleting city with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
