@@ -1,10 +1,12 @@
 package cs.vsu.radiomanager.controller.api;
 
 import cs.vsu.radiomanager.dto.AudioRecordingDto;
+import cs.vsu.radiomanager.dto.CombinedAudioRecordingResponseDto;
 import cs.vsu.radiomanager.model.enumerate.ApprovalStatus;
 import cs.vsu.radiomanager.model.enumerate.Role;
 import cs.vsu.radiomanager.security.JwtFilter;
 import cs.vsu.radiomanager.service.AudioRecordingService;
+import cs.vsu.radiomanager.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -15,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +29,8 @@ public class AudioRecordingController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AudioRecordingController.class);
 
     private final AudioRecordingService audioRecordingService;
+
+    private final FileService fileService;
 
     private final JwtFilter jwtFilter;
 
@@ -60,13 +65,22 @@ public class AudioRecordingController {
     public ResponseEntity<?> getAudioRecordingById(@PathVariable Long id) {
         try {
             AudioRecordingDto recording = audioRecordingService.getRecordingById(id);
-            if (recording != null) {
-                LOGGER.info("Fetched recording with ID {}", id);
-                return ResponseEntity.ok(recording);
-            } else {
+            if (recording == null) {
                 LOGGER.warn("Recording with ID {} not found", id);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recording not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
+            String uniqueFileName = fileService.generateUniqueFilename(id, recording.getFilePath());
+            byte[] fileData = fileService.getAudio(uniqueFileName);
+            String fileContentBase64 = java.util.Base64.getEncoder().encodeToString(fileData);
+
+            CombinedAudioRecordingResponseDto responseDto = new CombinedAudioRecordingResponseDto();
+            responseDto.setFileContentBase64(fileContentBase64);
+            responseDto.setRecording(recording);
+
+            LOGGER.info("Fetched recording with ID {} and file content", id);
+            return ResponseEntity.ok(responseDto);
+
         } catch (Exception e) {
             LOGGER.error("Error fetching recording with ID {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -166,12 +180,34 @@ public class AudioRecordingController {
     @PreAuthorize("hasAnyRole('ADVERTISER', 'ADMIN')")
     @Operation(
             summary = "Create new audio recording",
-            description = "Creates a new audio recording. Only data is accepted here; file operations are handled separately."
+            description = "Uploads an audio file, calculates its duration and cost, creates a new" +
+                    " audio recording in the database, and saves the physical file with a unique filename" +
+                    " based on the generated audio recording ID."
     )
-    public ResponseEntity<?> createRecording(@RequestBody @Valid AudioRecordingDto recordingDto) {
+    public ResponseEntity<?> createRecording(
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request) {
         try {
-            LOGGER.info("Created audio recording: {}", recordingDto);
+            String originalFilename = file.getOriginalFilename();
+            Long userId = jwtFilter.getUserId(request);
+            LOGGER.info("User {} is uploading file: {}", userId, originalFilename);
+            LOGGER.info("Type is {}", file.getContentType());
+
+            Double duration = fileService.getAudioDuration(file);
+            Double cost = audioRecordingService.getCostByDuration(duration);
+
+            AudioRecordingDto recordingDto = new AudioRecordingDto();
+            recordingDto.setUserId(userId);
+            recordingDto.setFilePath(originalFilename);
+            recordingDto.setDuration(duration);
+            recordingDto.setCost(cost);
+            recordingDto.setApprovalStatus(ApprovalStatus.PENDING);
             AudioRecordingDto created = audioRecordingService.createRecording(recordingDto);
+            LOGGER.info("Created audio recording: {}", created);
+
+            String uniqueFilename = fileService.saveAudio(file, created.getId());
+            LOGGER.info("Unique file saved: {}", uniqueFilename);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (Exception e) {
             LOGGER.error("Error creating audio recording", e);
@@ -210,9 +246,17 @@ public class AudioRecordingController {
     public ResponseEntity<?> deleteRecording(@PathVariable Long id) {
         try {
             LOGGER.info("Deleted audio recording with ID: {}", id);
-            boolean deleted = audioRecordingService.deleteRecording(id);
-            if (deleted) {
-                return ResponseEntity.ok().build();
+            AudioRecordingDto deleted = audioRecordingService.deleteRecording(id);
+            if (deleted != null) {
+                String uniqueFilename = fileService.generateUniqueFilename(deleted.getId(), deleted.getFilePath());
+
+                if (fileService.deleteAudio(uniqueFilename)) {
+                    LOGGER.info("Audio recording with ID {} and file {} deleted successfully", id, uniqueFilename);
+                    return ResponseEntity.ok().build();
+                } else {
+                    LOGGER.warn("Audio recording with ID {} was deleted from DB but file {} was not found for deletion", id, uniqueFilename);
+                    return ResponseEntity.ok("Recording deleted, but file not found.");
+                }
             }
             LOGGER.warn("Audio recording with ID {} not found for delete", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
