@@ -123,9 +123,9 @@ public class CityController {
             CityDto updatedCity = cityService.updateCity(cityDto);
             if (updatedCity != null) {
                 return ResponseEntity.ok(updatedCity);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+            LOGGER.warn("City with ID {} not found for update", cityDto.getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             LOGGER.error("Error updating city: {}", cityDto, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
