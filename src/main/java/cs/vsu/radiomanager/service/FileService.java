@@ -32,13 +32,14 @@ public class FileService {
         }
     }
 
-    public String saveAudio(MultipartFile file) {
-        return saveFile(file, Path.of(audioFilesDir));
+    public String saveAudio(MultipartFile file, Long fileId) {
+        return saveFile(file, Path.of(audioFilesDir), fileId);
     }
 
-    private String saveFile(MultipartFile file, Path directory) {
+    private String saveFile(MultipartFile file, Path directory, Long fileId) {
         try {
-            String filename = file.getOriginalFilename();
+            String originalFilename = file.getOriginalFilename();
+            String filename = generateUniqueFilename(fileId, originalFilename);
             Path filepath = directory.resolve(Objects.requireNonNull(filename));
             Files.write(filepath, file.getBytes());
             LOGGER.info("File saved: {}", filepath);
@@ -84,6 +85,10 @@ public class FileService {
             LOGGER.error("Error deleting file: {}", e.getMessage());
             throw new RuntimeException("Error deleting file", e);
         }
+    }
+
+    public String generateUniqueFilename(Long fileId, String originalFilename) {
+        return fileId + "_" + originalFilename;
     }
 
 }
