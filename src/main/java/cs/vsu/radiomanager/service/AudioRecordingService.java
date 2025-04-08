@@ -82,7 +82,7 @@ public class AudioRecordingService {
         }
     }
 
-    public boolean deleteRecording(Long id) {
+    public AudioRecordingDto deleteRecording(Long id) {
         LOGGER.debug("Deleting recording {}", id);
         try {
             Optional<AudioRecording> optionalAudioRecording = audioRecordingRep.findById(id);
@@ -90,10 +90,10 @@ public class AudioRecordingService {
                 AudioRecording audioRecording = optionalAudioRecording.get();
                 audioRecordingRep.delete(audioRecording);
                 LOGGER.debug("Recording deleted with id {}", audioRecording.getId());
-                return true;
+                return mapper.toDto(audioRecording);
             }
             LOGGER.warn("Recording with id for delete {} not found", id);
-            return false;
+            return null;
         } catch (Exception e) {
             LOGGER.error("Error deleting recording {}", id, e);
             throw new RuntimeException("Error deleting recording: " + id, e);
