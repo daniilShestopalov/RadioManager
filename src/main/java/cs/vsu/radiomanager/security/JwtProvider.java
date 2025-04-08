@@ -1,6 +1,7 @@
 package cs.vsu.radiomanager.security;
 
 import cs.vsu.radiomanager.dto.UserDto;
+import cs.vsu.radiomanager.model.enumerate.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -85,5 +86,11 @@ public class JwtProvider {
     public Long getUserIdFromToken(@NonNull String token) {
         Claims claims = getClaims(token);
         return Long.parseLong(claims.getSubject());
+    }
+
+    public Role getRoleFromToken(@NonNull String token) {
+        Claims claims = getClaims(token);
+        String role = claims.get("role", String.class);
+        return Role.valueOf(role);
     }
 }
