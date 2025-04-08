@@ -223,4 +223,33 @@ public class AudioRecordingController {
         }
     }
 
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Update audio recording status",
+            description = "Updates the approval status of an audio recording by its ID. Valid statuses: APPROVED, PENDING, REJECTED."
+    )
+    public ResponseEntity<?> updateRecordingStatus(@PathVariable Long id, @RequestParam String status) {
+        try {
+            ApprovalStatus newStatus;
+            try {
+                newStatus = ApprovalStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                LOGGER.warn("Invalid status provided: {}", status);
+                return ResponseEntity.badRequest().body("Invalid status. Allowed values: APPROVED, PENDING, REJECTED.");
+            }
+            LOGGER.info("Updating audio recording with ID: {}", id);
+            AudioRecordingDto updated = audioRecordingService.updateRecordingStatus(id, newStatus);
+            if (updated != null) {
+                return ResponseEntity.ok(updated);
+            }
+            LOGGER.warn("Audio recording with ID {} not found for update status", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        } catch (Exception e) {
+            LOGGER.error("Error updating audio recording status with ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
