@@ -63,9 +63,9 @@ public class AuthService {
         LOGGER.info("Updating password by login: {}", login);
         Optional<User> userOptional = userRepository.findByLogin(login);
         if (userOptional.isPresent()) {
-            userService.updatePassword(userOptional.get().getId(), password);
+            boolean success = userService.updatePassword(userOptional.get().getId(), password);
             LOGGER.info("Password updated successfully");
-            return true;
+            return success;
         }
         return false;
     }
@@ -74,9 +74,9 @@ public class AuthService {
         LOGGER.info("Updating password for user ID: {}", userId);
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
-            userService.updatePassword(userOptional.get().getId(), newPassword);
+            boolean success = userService.updatePassword(userOptional.get().getId(), newPassword);
             LOGGER.info("Password updated successfully for user ID: {}", userId);
-            return true;
+            return success;
         }
         LOGGER.warn("User not found with ID: {}", userId);
         return false;
