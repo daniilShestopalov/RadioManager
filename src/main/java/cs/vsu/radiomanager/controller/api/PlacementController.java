@@ -25,7 +25,7 @@ public class PlacementController {
     private final PlacementService placementService;
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get all placements", description = "Retrieves a list of all placements.")
     public ResponseEntity<List<PlacementDto>> getAllPlacements() {
         try {
