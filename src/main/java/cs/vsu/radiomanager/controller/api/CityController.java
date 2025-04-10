@@ -45,9 +45,9 @@ public class CityController {
             CityDto city = cityService.getCityById(id);
             if (city != null) {
                 return ResponseEntity.ok(city);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             LOGGER.error("Error fetching city by ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -63,9 +63,9 @@ public class CityController {
             CityDto city = cityService.getCityByNameAndRegion(name, region);
             if (city != null) {
                 return ResponseEntity.ok(city);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             LOGGER.error("Error fetching city by name: {} and region: {}", name, region, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

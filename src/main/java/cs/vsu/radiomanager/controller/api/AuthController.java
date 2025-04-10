@@ -46,9 +46,9 @@ public class AuthController {
 
                 return ResponseEntity.ok().headers(headers).body(userDto);
 
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid login or password");
             }
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid login or password");
         } catch (Exception e) {
             LOGGER.error("Error during authentication", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -85,10 +85,10 @@ public class AuthController {
             if (userId != null) {
                 LOGGER.info("Verification successful for code: {}. Extracted userId: {}", codeDto.getCode(), userId);
                 return ResponseEntity.ok("Verification code is valid.");
-            } else {
-                LOGGER.warn("Verification failed: invalid code provided: {}", codeDto.getCode());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification code.");
             }
+
+            LOGGER.warn("Verification failed: invalid code provided: {}", codeDto.getCode());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification code.");
         } catch (RuntimeException e) {
             LOGGER.error("Error validating verification code: {}", codeDto.getCode(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to validate verification code.");
@@ -112,10 +112,10 @@ public class AuthController {
             if (isUpdated) {
                 LOGGER.info("Password successfully reset for user ID: {}", userId);
                 return ResponseEntity.ok().build();
-            } else {
-                LOGGER.error("Failed to reset password for user ID: {}", userId);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to reset password.");
             }
+
+            LOGGER.error("Failed to reset password for user ID: {}", userId);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to reset password.");
         } catch (Exception e) {
             LOGGER.error("Exception occurred while resetting password", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to reset password.");
@@ -147,11 +147,11 @@ public class AuthController {
             if (isRegistered) {
                 LOGGER.info("User registered successfully: {}", userDto.getLogin());
                 return ResponseEntity.ok("User registered successfully.");
-            } else {
-                LOGGER.error("Failed to register user: {}", userDto.getLogin());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Registration failed.");
             }
+
+            LOGGER.error("Failed to register user: {}", userDto.getLogin());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Registration failed.");
         } catch (Exception e) {
             LOGGER.error("Exception occurred during registration for user: {}", userDto.getLogin(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
