@@ -1,6 +1,7 @@
 package cs.vsu.radiomanager.config;
 
 import cs.vsu.radiomanager.dto.UserDto;
+import cs.vsu.radiomanager.model.enumerate.Role;
 import cs.vsu.radiomanager.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class SystemEntityConfig {
                 systemEntity.setName(entityName);
                 systemEntity.setSurname(entitySurname);
                 systemEntity.setBalance(entityBalance);
+                systemEntity.setRole(Role.ADMIN);
                 authService.registerUser(systemEntity);
                 LOGGER.info("System entity user created successfully.");
             } else {
