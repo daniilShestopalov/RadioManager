@@ -62,7 +62,7 @@ public class ProfileController {
         List<TransactionDto> transactions = transactionService.getTransactionsByUserId(userId);
 
         List<NameDto> admins = transactions.stream()
-                .map(t -> transactionService.getNameById(t.getAdminId()))
+                .map(t -> userService.getNameById(t.getAdminId()))
                 .toList();
         model.addAttribute("transactions", transactions);
         model.addAttribute("admins", admins);
