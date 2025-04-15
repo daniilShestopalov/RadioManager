@@ -1,5 +1,6 @@
 package cs.vsu.radiomanager.service;
 
+import cs.vsu.radiomanager.dto.NameDto;
 import cs.vsu.radiomanager.dto.UserDto;
 import cs.vsu.radiomanager.mapper.UserMapper;
 import cs.vsu.radiomanager.model.User;
@@ -122,6 +123,18 @@ public class UserService {
     public Role getRoleById(Long id) {
         LOGGER.debug("Getting role by id: {}", id);
         return getUserById(id).getRole();
+    }
+
+    public NameDto getNameById(Long id) {
+        LOGGER.debug("Fetching name by id: {}", id);
+        UserDto userDto = getUserById(id);
+        if (userDto != null) {
+            NameDto nameDto = new NameDto();
+            nameDto.setName(userDto.getName());
+            nameDto.setSurname(userDto.getSurname());
+            return nameDto;
+        }
+        return null;
     }
 
 }

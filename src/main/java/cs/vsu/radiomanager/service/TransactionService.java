@@ -49,7 +49,7 @@ public class TransactionService {
         return mapper.toDtoList(transactionRep.findByAdminId(adminId));
     }
 
-    public List<TransactionDto> getTransactionsAdminIdAndUserId(Long adminId, Long userId) {
+    public List<TransactionDto> getTransactionsByAdminIdAndUserId(Long adminId, Long userId) {
         LOGGER.debug("Fetching transactions by admin id: {} and user id: {}", adminId, userId);
         return mapper.toDtoList(transactionRep.findByAdminIdAndUserId(adminId, userId));
     }
@@ -87,18 +87,6 @@ public class TransactionService {
             LOGGER.error("Error while deleting transaction", e);
             throw new RuntimeException("Error while deleting transaction");
         }
-    }
-
-    public NameDto getNameById(Long id) {
-        LOGGER.debug("Fetching name by id: {}", id);
-        UserDto userDto = userService.getUserById(id);
-        if (userDto != null) {
-            NameDto nameDto = new NameDto();
-            nameDto.setName(userDto.getName());
-            nameDto.setSurname(userDto.getSurname());
-            return nameDto;
-        }
-        return null;
     }
 
 }
