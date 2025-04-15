@@ -6,7 +6,6 @@ import cs.vsu.radiomanager.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,31 +16,18 @@ public class SystemEntityConfig {
 
     private final Logger LOGGER = LoggerFactory.getLogger(SystemEntityConfig.class);
 
-    @Value("${system.entity.login}")
-    private String entityLogin;
-
-    @Value("${system.entity.password}")
-    private String entityPassword;
-
-    @Value("${system.entity.name}")
-    private String entityName;
-
-    @Value("${system.entity.surname}")
-    private String entitySurname;
-
-    @Value("${system.entity.balance}")
-    private Double entityBalance;
+    private final SystemEntityProperties systemEntityProperties;
 
     @Bean
     public CommandLineRunner createSystemEntity(AuthService authService) {
         return args -> {
-            if (!authService.checkEmailExists(entityLogin)) {
+            if (!authService.checkEmailExists(systemEntityProperties.getLogin())) {
                 UserDto systemEntity = new UserDto();
-                systemEntity.setLogin(entityLogin);
-                systemEntity.setPassword(entityPassword);
-                systemEntity.setName(entityName);
-                systemEntity.setSurname(entitySurname);
-                systemEntity.setBalance(entityBalance);
+                systemEntity.setLogin(systemEntityProperties.getLogin());
+                systemEntity.setPassword(systemEntityProperties.getPassword());
+                systemEntity.setName(systemEntityProperties.getName());
+                systemEntity.setSurname(systemEntityProperties.getSurname());
+                systemEntity.setBalance(systemEntityProperties.getBalance());
                 systemEntity.setRole(Role.ADMIN);
                 authService.registerUser(systemEntity);
                 LOGGER.info("System entity user created successfully.");
