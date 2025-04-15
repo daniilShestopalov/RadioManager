@@ -1,7 +1,6 @@
 package cs.vsu.radiomanager.repository;
 
 import cs.vsu.radiomanager.model.BroadcastSlot;
-import cs.vsu.radiomanager.model.RadioStation;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

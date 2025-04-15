@@ -111,6 +111,25 @@ public class BroadcastSlotService {
         }
     }
 
+    public boolean deleteBroadcastSlotsByRadioStationAfterStartTime(
+            Long radioStationId, LocalDateTime startTime) {
+        LOGGER.debug("Deleting broadcast slots of radio station {} after start time: {}",
+                radioStationId, startTime);
+        try {
+            if (broadcastSlotRep.deleteAllByRadioStationIdAndStartTimeAfter(radioStationId, startTime)) {
+                LOGGER.info("Deleted broadcast slots of radio station {} after start time: {}",
+                        radioStationId, startTime);
+                return true;
+            }
+            LOGGER.warn("No broadcast slots found for delete");
+            return false;
+        } catch (Exception e) {
+            LOGGER.error("Error deleting broadcast slots of radio station", e);
+            throw new RuntimeException("Error deleting broadcast slots of radio station", e);
+        }
+
+    }
+
     public BroadcastSlotDto updateBroadcastSlotStatus(Long id, Status status) {
         LOGGER.debug("Updating broadcast slot status: {}", id);
         Optional<BroadcastSlot> broadcastSlot = broadcastSlotRep.findById(id);
@@ -179,6 +198,27 @@ public class BroadcastSlotService {
         LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime end = start.plusMonths(1);
         List<BroadcastSlot> slots = broadcastSlotRep.findByStartTimeBetween(start, end);
+        return slots.stream()
+                .sorted(Comparator.comparing(BroadcastSlot::getStartTime))
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<BroadcastSlotDto> getBroadcastSlotsByRadioStationIdAfterStartTime(Long id, LocalDateTime startTime) {
+        LOGGER.debug("Fetching broadcast slots for radio station: {} after {}", id, startTime.toString());
+        List<BroadcastSlot> slots = broadcastSlotRep.findByRadioStationIdAndStartTimeAfter(id, startTime);
+        return slots.stream()
+                .sorted(Comparator.comparing(BroadcastSlot::getStartTime))
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<BroadcastSlotDto> getBroadcastSlotsByRadioStationIdWithStatusAfterStartTime(
+            Long id, Status status,LocalDateTime startTime) {
+        LOGGER.debug("Fetching broadcast slots for radio station: {} with status: {} after {}",
+                id, status,startTime.toString());
+        List<BroadcastSlot> slots = broadcastSlotRep.findByRadioStationIdAndStatusAndStartTimeAfter(
+                id, status, startTime);
         return slots.stream()
                 .sorted(Comparator.comparing(BroadcastSlot::getStartTime))
                 .map(mapper::toDto)
