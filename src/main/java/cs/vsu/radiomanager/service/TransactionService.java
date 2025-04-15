@@ -50,7 +50,7 @@ public class TransactionService {
         return mapper.toDtoList(transactionRep.findByAdminIdAndUserId(adminId, userId));
     }
 
-    List<TransactionDto> getTransactionsByDate(LocalDateTime transactionDate) {
+    public List<TransactionDto> getTransactionsByDate(LocalDateTime transactionDate) {
         LOGGER.debug("Fetching transactions by date {}", transactionDate);
         return mapper.toDtoList(transactionRep.findByTransactionDate(transactionDate));
     }
