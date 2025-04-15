@@ -1,8 +1,6 @@
 package cs.vsu.radiomanager.service;
 
-import cs.vsu.radiomanager.dto.NameDto;
 import cs.vsu.radiomanager.dto.TransactionDto;
-import cs.vsu.radiomanager.dto.UserDto;
 import cs.vsu.radiomanager.mapper.TransactionMapper;
 import cs.vsu.radiomanager.model.Transaction;
 import cs.vsu.radiomanager.repository.TransactionRep;
@@ -22,8 +20,6 @@ public class TransactionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionService.class);
 
     private final TransactionRep transactionRep;
-
-    private final UserService userService;
 
     private final TransactionMapper mapper;
 
