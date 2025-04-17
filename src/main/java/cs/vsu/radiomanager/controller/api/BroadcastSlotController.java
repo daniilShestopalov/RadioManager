@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/broadcast-slot")
@@ -206,6 +207,11 @@ public class BroadcastSlotController {
 
             LOGGER.debug("Extracting time pairs from Excel");
             List<Pair<LocalDateTime, LocalDateTime>> pairs = fileService.getTimeFromExcel(file);
+
+            LocalDateTime now = LocalDateTime.now();
+            pairs = pairs.stream()
+                    .filter(p -> !p.getFirst().isBefore(now))
+                    .toList();
 
             LOGGER.debug("Mapping time pairs to DTOs for station {}", radioStationId);
             List<BroadcastSlotDto> dtos = broadcastSlotService.createBroadcastSlotsDtoFromTimeAndStation(
