@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -187,6 +188,75 @@ public class BroadcastSlotController {
             return ResponseEntity.ok(slots);
         } catch (Exception e) {
             LOGGER.error("Error fetching broadcast slots for radio station {} with status {} after {}", radioStationId, status, startTime, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/station/{radioStationId}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get all slots for a radio station",
+            description = "Retrieves all broadcast slots (any status) for the specified radio station ID."
+    )
+    public ResponseEntity<?> getBroadcastSlotsByRadioStationId(@PathVariable Long radioStationId) {
+        try {
+            LOGGER.info("Fetching all slots for radio station with id: {}", radioStationId);
+            List<BroadcastSlotDto> slots = broadcastSlotService.getBroadcastSlotByRadioStationId(radioStationId);
+            return ResponseEntity.ok(slots);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching broadcast slots for radio station {}", radioStationId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/station/{radioStationId}/status/{status}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get slots by station and status",
+            description = "Retrieves all broadcast slots with the given status for the specified radio station ID."
+    )
+    public ResponseEntity<?> getBroadcastSlotsByStatusAndRadioStationId(
+            @PathVariable Long radioStationId,
+            @PathVariable String status) {
+        Status slotStatus;
+        try {
+            try {
+                slotStatus = Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                LOGGER.warn("Invalid status: {}", status);
+                return ResponseEntity.badRequest()
+                        .body("Invalid status. Allowed values: " + Arrays.toString(Status.values()));
+            }
+            LOGGER.info("Fetching slots for station {} with status: {}", radioStationId, slotStatus);
+            List<BroadcastSlotDto> slots = broadcastSlotService.getBroadcastSlotsByRadioStationIdWithStatus(
+                    radioStationId, slotStatus);
+            return ResponseEntity.ok(slots);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching broadcast slots for radio station {} with status: {}",
+                    radioStationId, status, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+    }
+
+    @GetMapping("/station/{radioStationId}/available")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get available slots by priority for a station",
+            description = "Retrieves only AVAILABLE slots for the given radio station ID, filtered by priority window. " +
+                    "Pass highPriority=true to get slots in the high‑priority windows, false for the rest."
+    )
+    public ResponseEntity<?> getAvailableSlotsByRadioStationIdWithPriority(
+            @PathVariable Long radioStationId, @RequestParam boolean highPriority) {
+        try {
+            LOGGER.info("Fetching AVAILABLE slots for station {} with high priority: {}",
+                    radioStationId, highPriority);
+            List<BroadcastSlotDto> slots = broadcastSlotService.getEmptyBroadcastSlotsByPriorityWithRadioStation(
+                    radioStationId, highPriority);
+            return ResponseEntity.ok(slots);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching available broadcast slots for radio station {} with high priority: {}",
+                    radioStationId, highPriority, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -1,10 +1,12 @@
 package cs.vsu.radiomanager.service;
 
+import cs.vsu.radiomanager.config.BaseProperties;
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
 import cs.vsu.radiomanager.mapper.BroadcastSlotMapper;
 import cs.vsu.radiomanager.model.BroadcastSlot;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.repository.BroadcastSlotRep;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,11 +28,11 @@ public class BroadcastSlotService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastSlotService.class);
 
-    private static final Duration MIN_DURATION = Duration.ofSeconds(10);
-
     private final BroadcastSlotRep broadcastSlotRep;
 
     private final BroadcastSlotMapper mapper;
+
+    private final BaseProperties baseProperties;
 
     public List<BroadcastSlotDto> getAllBroadcastSlots() {
         LOGGER.debug("Fetching all broadcast slots");
@@ -68,6 +71,35 @@ public class BroadcastSlotService {
         return broadcastSlotRep.findByStartTimeAndEndTime(startTime, endTime)
                 .map(mapper::toDto)
                 .orElse(null);
+    }
+
+    public  List<BroadcastSlotDto> getBroadcastSlotByRadioStationId(Long radioStationId) {
+        LOGGER.debug("Fetching broadcast slot by radio station with id: {}", radioStationId);
+        return mapper.toDtoList(broadcastSlotRep.findByRadioStationId(radioStationId));
+    }
+
+    public List<BroadcastSlotDto> getBroadcastSlotsByRadioStationIdWithStatus(Long radioStationId, Status status) {
+        LOGGER.debug("Fetching broadcast slot by radio station with id: {}, with status: {}", radioStationId, status);
+        return mapper.toDtoList(broadcastSlotRep.findByRadioStationIdAndStatus(radioStationId, status));
+    }
+
+    public List<BroadcastSlotDto> getEmptyBroadcastSlotsByPriorityWithRadioStation(
+            Long radioStationId, boolean highPriority) {
+        LOGGER.debug("Fetching broadcast slot by radio station with id: {} and high priority is {}",
+                radioStationId, highPriority);
+        List<BroadcastSlotDto> slots = getBroadcastSlotsByRadioStationIdWithStatus(radioStationId, Status.AVAILABLE);
+        return slots.stream()
+                .filter(slot -> {
+                    LocalTime slotStart = slot.getStartTime().toLocalTime();
+
+                    boolean isHigh = baseProperties.getPriorityHigh().stream()
+                            .anyMatch(window ->
+                                    !slotStart.isBefore(window.getStart()) &&
+                                            slotStart.isBefore(window.getEnd())
+                            );
+                    return highPriority == isHigh;
+                })
+                .toList();
     }
 
     public BroadcastSlotDto createBroadcastSlot(BroadcastSlotDto broadcastSlotDto) {
@@ -194,7 +226,8 @@ public class BroadcastSlotService {
             BroadcastSlot updatedBroadcastSlot = broadcastSlotRep.save(broadcastSlot);
             LOGGER.info("Updated original broadcast slot endTime and status: {}", updatedBroadcastSlot);
 
-            if (Duration.between(newEndTime, originalEndTime).compareTo(MIN_DURATION) >= 0) {
+            if (Duration.between(newEndTime, originalEndTime)
+                    .compareTo(Duration.ofSeconds(baseProperties.getMinSlotDuration())) >= 0) {
                 BroadcastSlot newBroadcastSlot = new BroadcastSlot();
                 newBroadcastSlot.setStartTime(newEndTime);
                 newBroadcastSlot.setEndTime(originalEndTime);
