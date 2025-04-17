@@ -22,6 +22,6 @@ public class BaseProperties {
 
     private Double priorityMultiplier;
 
-    private List<TimeWindow> priority1;
+    private List<TimeWindow> priorityHigh;
 
 }
