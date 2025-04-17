@@ -8,10 +8,12 @@ import cs.vsu.radiomanager.repository.BroadcastSlotRep;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +78,22 @@ public class BroadcastSlotService {
         } catch (Exception e) {
             LOGGER.error("Error creating broadcast slot", e);
             throw new RuntimeException("Error creating broadcast slot", e);
+        }
+    }
+
+    public List<BroadcastSlotDto> createBroadcastSlots(List<BroadcastSlotDto> broadcastSlotsDto) {
+        LOGGER.debug("Creating broadcast slots: {}", broadcastSlotsDto);
+        try {
+            List<BroadcastSlot> entities = mapper.toEntityList(broadcastSlotsDto);
+
+            List<BroadcastSlot> savedEntities = broadcastSlotRep.saveAll(entities);
+
+            List<BroadcastSlotDto> result = mapper.toDtoList(savedEntities);
+            LOGGER.info("Successfully created {} broadcast slots", result.size());
+            return result;
+        } catch (Exception e) {
+            LOGGER.error("Error creating broadcast slots", e);
+            throw new RuntimeException("Error creating broadcast slots", e);
         }
     }
 
@@ -223,6 +241,30 @@ public class BroadcastSlotService {
                 .sorted(Comparator.comparing(BroadcastSlot::getStartTime))
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<BroadcastSlotDto> createBroadcastSlotsDtoFromTimeAndStation(
+            Long stationId, List<Pair<LocalDateTime, LocalDateTime>> timePair) {
+        LOGGER.debug("Creating broadcast slot dto for station: {}", stationId);
+        try {
+            List<BroadcastSlotDto> dtos = new ArrayList<>();
+            BroadcastSlotDto newDto;
+            for (Pair<LocalDateTime, LocalDateTime> pair : timePair) {
+                newDto = new BroadcastSlotDto();
+                //newDto.setId(0L);
+                newDto.setStartTime(pair.getFirst());
+                newDto.setEndTime(pair.getSecond());
+                newDto.setStatus(Status.AVAILABLE);
+                newDto.setRadioStationId(stationId);
+                dtos.add(newDto);
+            }
+            LOGGER.debug("Created {} broadcast slot DTOs for station {}", dtos.size(), stationId);
+            return dtos;
+        } catch (Exception e) {
+            LOGGER.error("Error creating broadcast slot dto", e);
+            throw new RuntimeException("Error creating broadcast slot dto", e);
+        }
+
     }
 
 }
