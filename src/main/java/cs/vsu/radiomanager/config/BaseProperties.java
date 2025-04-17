@@ -24,4 +24,6 @@ public class BaseProperties {
 
     private List<TimeWindow> priorityHigh;
 
+    private long minSlotDuration;
+
 }
