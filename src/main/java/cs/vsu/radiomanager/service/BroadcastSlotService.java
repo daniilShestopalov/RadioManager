@@ -6,7 +6,6 @@ import cs.vsu.radiomanager.mapper.BroadcastSlotMapper;
 import cs.vsu.radiomanager.model.BroadcastSlot;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.repository.BroadcastSlotRep;
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
