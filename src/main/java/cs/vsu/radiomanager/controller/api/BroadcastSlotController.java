@@ -3,16 +3,19 @@ package cs.vsu.radiomanager.controller.api;
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.service.BroadcastSlotService;
+import cs.vsu.radiomanager.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +28,8 @@ public class BroadcastSlotController {
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastSlotController.class);
 
     private final BroadcastSlotService broadcastSlotService;
+
+    private final FileService fileService;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -182,6 +187,38 @@ public class BroadcastSlotController {
             return ResponseEntity.ok(slots);
         } catch (Exception e) {
             LOGGER.error("Error fetching broadcast slots for radio station {} with status {} after {}", radioStationId, status, startTime, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/excel")
+    @PreAuthorize("hasAnyRole('RADIO_REPRESENTATIVE', 'ADMIN')")
+    @Operation(
+            summary = "Bulk create broadcast slots from Excel file",
+            description = "Reads an Excel (.xlsx) file containing start and end times in" +
+                    " the first two columns and creates AVAILABLE broadcast slots for the specified radio station."
+    )
+    public ResponseEntity<?> createSlotsFromExel(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("radioStationId") Long radioStationId) {
+        try {
+            LOGGER.info("Creating broadcast slots from file: {}", file.getOriginalFilename());
+
+            LOGGER.debug("Extracting time pairs from Excel");
+            List<Pair<LocalDateTime, LocalDateTime>> pairs = fileService.getTimeFromExcel(file);
+
+            LOGGER.debug("Mapping time pairs to DTOs for station {}", radioStationId);
+            List<BroadcastSlotDto> dtos = broadcastSlotService.createBroadcastSlotsDtoFromTimeAndStation(
+                    radioStationId,
+                    pairs
+            );
+
+            LOGGER.debug("Saving {} broadcast slots to DB", dtos.size());
+            dtos = broadcastSlotService.createBroadcastSlots(dtos);
+
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            LOGGER.error("Error creating slots from file", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
