@@ -3,6 +3,7 @@ package cs.vsu.radiomanager.controller.api;
 import cs.vsu.radiomanager.dto.PlacementDto;
 import cs.vsu.radiomanager.service.PlacementService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +152,25 @@ public class PlacementController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             LOGGER.error("Error deleting placement with ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/price")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Calculate placement price",
+            description = "Calculate the price of a placement by taking the audio recording cost and applying" +
+                    " a priority multiplier if the broadcast slot start time falls within configured" +
+                    " high‑priority periods."
+    )
+    public ResponseEntity<?> getPlacementPrice(@RequestBody @Valid PlacementDto placementDto) {
+        try {
+            LOGGER.info("Fetching placement price: {}", placementDto);
+            Double price = placementService.getPlacementPrice(placementDto);
+            return ResponseEntity.ok(price);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching placement price: {}", placementDto, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
