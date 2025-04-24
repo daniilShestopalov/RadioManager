@@ -1,6 +1,11 @@
 package cs.vsu.radiomanager.controller.api;
 
+import cs.vsu.radiomanager.dto.AudioRecordingDto;
+import cs.vsu.radiomanager.dto.BroadcastSlotDto;
 import cs.vsu.radiomanager.dto.PlacementDto;
+import cs.vsu.radiomanager.model.enumerate.Status;
+import cs.vsu.radiomanager.service.AudioRecordingService;
+import cs.vsu.radiomanager.service.BroadcastSlotService;
 import cs.vsu.radiomanager.service.PlacementService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -13,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +30,10 @@ public class PlacementController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlacementController.class);
 
     private final PlacementService placementService;
+
+    private final BroadcastSlotService broadcastSlotService;
+
+    private final AudioRecordingService audioRecordingService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -110,7 +120,20 @@ public class PlacementController {
     public ResponseEntity<?> createPlacement(@RequestBody PlacementDto placementDto) {
         try {
             LOGGER.info("Creating placement: {}", placementDto);
+            AudioRecordingDto audio = audioRecordingService.getRecordingById(placementDto.getAudioRecordingId());
+            BroadcastSlotDto slot = broadcastSlotService.getBroadcastSlotById(placementDto.getBroadcastSlotId());
+            if (Duration
+                    .ofSeconds(Math.round(audio.getDuration()))
+                    .compareTo(
+                            Duration
+                                    .between(slot.getStartTime(), slot.getEndTime())
+                    ) >= 0) {
+                LOGGER.warn("File with ID {} is too long for broadcast slot: {}",
+                        placementDto.getAudioRecordingId(),placementDto.getBroadcastSlotId());
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
             PlacementDto created = placementService.createPlacement(placementDto);
+            broadcastSlotService.updateBroadcastSlotStatus(created.getBroadcastSlotId(), Status.OCCUPIED);
             return ResponseEntity.ok(created);
         } catch (Exception e) {
             LOGGER.error("Error creating placement: {}", placementDto, e);
