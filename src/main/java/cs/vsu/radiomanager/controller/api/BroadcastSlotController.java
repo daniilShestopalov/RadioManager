@@ -1,7 +1,9 @@
 package cs.vsu.radiomanager.controller.api;
 
+import cs.vsu.radiomanager.dto.AudioRecordingDto;
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
 import cs.vsu.radiomanager.model.enumerate.Status;
+import cs.vsu.radiomanager.service.AudioRecordingService;
 import cs.vsu.radiomanager.service.BroadcastSlotService;
 import cs.vsu.radiomanager.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +34,8 @@ public class BroadcastSlotController {
     private final BroadcastSlotService broadcastSlotService;
 
     private final FileService fileService;
+
+    private final AudioRecordingService audioRecordingService;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -435,25 +440,40 @@ public class BroadcastSlotController {
     }
 
     @PostMapping("/split")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @Operation(
             summary = "Split broadcast slot",
-            description = "Splits an existing broadcast slot at the specified new end time. " +
-                    "The original slot's end time is updated and a new slot is created for the remaining period."
+            description = "Splits an existing broadcast slot based on the duration of the attached audio recording. " +
+                    "The original slot's end time is updated, and a new slot is created for the remaining period."
     )
-    public ResponseEntity<?> splitBroadcastSlot(@RequestParam Long id,
-                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newEndTime) {
+    public ResponseEntity<?> splitBroadcastSlot(@RequestParam Long slotId, @RequestParam Long audioId) {
         try {
-            LOGGER.info("Splitting broadcast slot with ID: {} at new end time: {}", id, newEndTime);
-            BroadcastSlotDto updatedSlot = broadcastSlotService.splitBroadcastSlot(id, newEndTime);
+            LOGGER.info("Splitting broadcast slot with ID: {} using audio recording duration ID: {}", slotId, audioId);
+            BroadcastSlotDto slot = broadcastSlotService.getBroadcastSlotById(slotId);
+            if (slot == null) {
+                LOGGER.warn("No broadcast slot found for ID: {}", slotId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            AudioRecordingDto audio = audioRecordingService.getRecordingById(audioId);
+            if (audio == null) {
+                LOGGER.warn("No audio found for ID: {}", audioId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            LocalDateTime newEndTime = slot
+                    .getStartTime()
+                    .plus(Duration.ofSeconds(Math.round(audio.getDuration())));
+            BroadcastSlotDto updatedSlot = broadcastSlotService.splitBroadcastSlot(slotId, newEndTime);
+
             if (updatedSlot != null) {
                 return ResponseEntity.ok(updatedSlot);
             }
 
-            LOGGER.warn("Broadcast slot with ID {} not found for splitting", id);
+            LOGGER.warn("Broadcast slot with ID {} not found for splitting", slot);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            LOGGER.error("Error splitting broadcast slot with ID: {}", id, e);
+            LOGGER.error("Error splitting broadcast slot with ID: {}", slotId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

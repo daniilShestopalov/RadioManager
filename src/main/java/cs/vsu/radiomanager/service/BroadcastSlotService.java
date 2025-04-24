@@ -231,6 +231,7 @@ public class BroadcastSlotService {
                 newBroadcastSlot.setStartTime(newEndTime);
                 newBroadcastSlot.setEndTime(originalEndTime);
                 newBroadcastSlot.setStatus(Status.AVAILABLE);
+                newBroadcastSlot.setRadioStation(updatedBroadcastSlot.getRadioStation());
 
                 BroadcastSlot savedNewBroadcastSlot = broadcastSlotRep.save(newBroadcastSlot);
                 LOGGER.info("Created new broadcast slot with id: {}", savedNewBroadcastSlot.getId());
