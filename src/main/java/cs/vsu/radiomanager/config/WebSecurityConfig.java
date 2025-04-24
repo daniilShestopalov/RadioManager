@@ -30,7 +30,7 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/login",
+                                "/auth",
                                 "/register",
                                 "/forgot-password",
                                 "/reset-password",
