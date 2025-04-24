@@ -184,8 +184,7 @@ public class AudioRecordingController {
                     " audio recording in the database, and saves the physical file with a unique filename" +
                     " based on the generated audio recording ID."
     )
-    public ResponseEntity<?> createRecording(
-            @RequestParam("file") MultipartFile file,
+    public ResponseEntity<?> createRecording(@RequestParam("file") MultipartFile file,
             HttpServletRequest request) {
         try {
             String originalFilename = file.getOriginalFilename();
