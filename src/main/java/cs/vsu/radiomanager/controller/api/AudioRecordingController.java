@@ -7,19 +7,23 @@ import cs.vsu.radiomanager.model.enumerate.Role;
 import cs.vsu.radiomanager.security.JwtFilter;
 import cs.vsu.radiomanager.service.AudioRecordingService;
 import cs.vsu.radiomanager.service.FileService;
+import cs.vsu.radiomanager.util.FileUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/audio-recording")
@@ -124,7 +128,6 @@ public class AudioRecordingController {
         try {
             ApprovalStatus approvalStatus;
             try {
-                //TODO определиться во фронте с этим
                 approvalStatus = ApprovalStatus.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException ex) {
                 LOGGER.warn("Invalid approval status: {}", status);
@@ -187,7 +190,7 @@ public class AudioRecordingController {
     public ResponseEntity<?> createRecording(@RequestParam("file") MultipartFile file,
             HttpServletRequest request) {
         try {
-            String originalFilename = file.getOriginalFilename();
+            String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
             Long userId = jwtFilter.getUserId(request);
             LOGGER.info("User {} is uploading file: {}", userId, originalFilename);
             LOGGER.info("Type is {}", file.getContentType());
@@ -208,6 +211,9 @@ public class AudioRecordingController {
             LOGGER.info("Unique file saved: {}", uniqueFilename);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error("Invalid filename during file upload: {}", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         } catch (Exception e) {
             LOGGER.error("Error creating audio recording", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -294,5 +300,37 @@ public class AudioRecordingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/{id}/download")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Download audio file",
+            description = "Downloads the actual MP3 file for the given audio recording ID."
+    )
+    public ResponseEntity<Resource> downloadRecording(@PathVariable Long id) {
+        try {
+            LOGGER.info("Downloading audio file for recording ID: {}", id);
+            AudioRecordingDto recording = audioRecordingService.getRecordingById(id);
+
+            if (recording == null) {
+                LOGGER.warn("Audio recording with ID {} not found", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            String uniqueFilename = fileService.generateUniqueFilename(id, recording.getFilePath());
+            LOGGER.debug("Resolved unique filename: {}", uniqueFilename);
+
+            byte[] fileData = fileService.getAudio(uniqueFilename);
+            LOGGER.info("Read {} bytes for file {}", fileData.length, uniqueFilename);
+
+            ResponseEntity<Resource> response = FileUtils.getFileResponse(fileData, uniqueFilename);
+            LOGGER.info("Returning file response for recording ID: {}", id);
+            return response;
+        } catch (Exception e) {
+            LOGGER.error("Error downloading audio recording with ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 }

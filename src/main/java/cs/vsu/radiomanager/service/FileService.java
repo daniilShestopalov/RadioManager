@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,15 +45,25 @@ public class FileService {
 
     private String saveFile(MultipartFile file, Path directory, Long fileId) {
         try {
-            String originalFilename = file.getOriginalFilename();
+            String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+            validateFilename(originalFilename);
             String filename = generateUniqueFilename(fileId, originalFilename);
-            Path filepath = directory.resolve(Objects.requireNonNull(filename));
+            Path filepath = directory.resolve(Objects.requireNonNull(filename)).normalize();
             Files.write(filepath, file.getBytes());
             LOGGER.info("File saved: {}", filepath);
             return filename;
         } catch (IOException e) {
             LOGGER.error("Error saving file: {}", e.getMessage());
             throw new RuntimeException("Error saving file", e);
+        }
+    }
+
+    private void validateFilename(String filename) {
+        if (filename == null || filename.isBlank()) {
+            throw new IllegalArgumentException("Filename is empty or null");
+        }
+        if (filename.contains("..") || filename.contains("/") || filename.contains("\\") || filename.contains("%00")) {
+            throw new IllegalArgumentException("Invalid filename: contains forbidden characters");
         }
     }
 
