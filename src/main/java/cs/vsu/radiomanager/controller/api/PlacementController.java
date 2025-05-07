@@ -179,7 +179,7 @@ public class PlacementController {
         }
     }
 
-    @GetMapping("/price")
+    @PostMapping("/price")
     @PreAuthorize("isAuthenticated()")
     @Operation(
             summary = "Calculate placement price",
