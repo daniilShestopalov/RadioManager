@@ -6,11 +6,13 @@ import cs.vsu.radiomanager.dto.auth.CodeDto;
 import cs.vsu.radiomanager.dto.auth.PasswordChangeDto;
 import cs.vsu.radiomanager.dto.auth.PasswordResetRequestDto;
 import cs.vsu.radiomanager.model.enumerate.Role;
+import cs.vsu.radiomanager.security.JwtFilter;
 import cs.vsu.radiomanager.security.JwtProvider;
 import cs.vsu.radiomanager.service.AuthService;
 import cs.vsu.radiomanager.service.ResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +35,8 @@ public class AuthController {
     private AuthService authService;
 
     private JwtProvider jwtProvider;
+
+    private JwtFilter jwtFilter;
 
     private ResetService resetService;
 
@@ -165,6 +170,39 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Registration error.");
         }
+    }
+
+    @PostMapping("/logout")
+    @Operation(
+            summary = "Logout user",
+            description = "Clears JWT cookie and logs out the user"
+    )
+    public ResponseEntity<?> logout(HttpServletResponse response, HttpServletRequest request) {
+        try {
+            Long userId = jwtFilter.getUserId(request);
+
+            if (userId != null) {
+                LOGGER.info("Logging out user: {}", userId);
+                SecurityContextHolder.clearContext();
+
+                Cookie jwtCookie = new Cookie(JWT_COOKIE_NAME, null);
+                jwtCookie.setPath("/");
+                jwtCookie.setHttpOnly(true);
+                jwtCookie.setSecure(true);
+                jwtCookie.setMaxAge(0);
+                response.addCookie(jwtCookie);
+
+                LOGGER.info("Logged out user: {}", userId);
+                return ResponseEntity.ok("Logged out successfully.");
+            }
+
+            LOGGER.warn("Logging out failed: user is not authenticated.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Logging out failed.");
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred during logout", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception occurred during logout");
+        }
+
     }
 
 }
