@@ -10,11 +10,12 @@ import cs.vsu.radiomanager.security.JwtProvider;
 import cs.vsu.radiomanager.service.AuthService;
 import cs.vsu.radiomanager.service.ResetService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {
+
+    private static final String JWT_COOKIE_NAME = "jwt";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
@@ -34,17 +37,22 @@ public class AuthController {
 
     @PostMapping
     @Operation(summary = "Authenticate user", description = "Authenticates a user and returns a JWT token in the response header")
-    public ResponseEntity<?> authenticate(@RequestBody @Valid AuthUserDto authUserDto) {
+    public ResponseEntity<?> authenticate(@RequestBody @Valid AuthUserDto authUserDto, HttpServletResponse response) {
         try {
             LOGGER.info("Attempting to authenticate user: {}", authUserDto.getLogin());
             var userDto = authService.authenticate(authUserDto);
             if (userDto != null) {
                 String token = jwtProvider.generateToken(userDto);
 
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", "Bearer " + token);
+                Cookie jwtCookie = new Cookie(JWT_COOKIE_NAME, token);
+                jwtCookie.setPath("/");
+                jwtCookie.setHttpOnly(true);
+                jwtCookie.setSecure(true);
+                jwtCookie.setMaxAge(24 * 60 * 60);
 
-                return ResponseEntity.ok().headers(headers).body(userDto);
+                response.addCookie(jwtCookie);
+
+                return ResponseEntity.ok().body(userDto);
 
             }
 
