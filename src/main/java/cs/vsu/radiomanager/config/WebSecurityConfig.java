@@ -37,10 +37,7 @@ public class WebSecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/auth",
-                                "/register",
-                                "/forgot-password",
-                                "/reset-password",
+                                "/auth/**",
                                 "/css/**"
                         ).permitAll()
                         .requestMatchers(
