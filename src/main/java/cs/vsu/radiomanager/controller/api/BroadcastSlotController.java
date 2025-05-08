@@ -2,6 +2,7 @@ package cs.vsu.radiomanager.controller.api;
 
 import cs.vsu.radiomanager.dto.AudioRecordingDto;
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
+import cs.vsu.radiomanager.model.enumerate.Role;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.service.AudioRecordingService;
 import cs.vsu.radiomanager.service.BroadcastSlotService;
@@ -495,6 +496,23 @@ public class BroadcastSlotController {
         }
     }
 
-
+    @GetMapping("/statuses")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get available statuses for slot",
+            description = "Retrieves a list of all available statuses for slots." +
+                    " This is useful for populating status selection dropdowns in the UI," +
+                    " allowing users to easily select or view the current status of a slot."
+    )
+    public ResponseEntity<?> getStatuses() {
+        try {
+            LOGGER.info("Fetching available statuses for slot");
+            List<Status> statuses = Arrays.asList(Status.values());
+            return ResponseEntity.ok(statuses);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching available statuses", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }
