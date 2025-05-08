@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -332,5 +333,23 @@ public class AudioRecordingController {
         }
     }
 
+    @GetMapping("/approval_statuses")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get available approval statuses for audio recording",
+            description = "Retrieves a list of all available approval statuses for audio recordings." +
+                    " This is useful for populating status selection dropdowns in the UI," +
+                    " allowing users to easily select or view the current status of a recording."
+    )
+    public ResponseEntity<?> getApprovalStatuses() {
+        try {
+            LOGGER.info("Fetching available approval statuses for audio");
+            List<ApprovalStatus> statuses = Arrays.asList(ApprovalStatus.values());
+            return ResponseEntity.ok(statuses);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching approval statuses roles", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }
