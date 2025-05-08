@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -185,6 +186,24 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             LOGGER.error("Error updating balance for user ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/roles")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get available roles for user",
+            description = "\"Retrieves a list of all roles that the authenticated user can assume or assign." +
+                    " Useful for populating role selection dropdowns in the UI."
+    )
+    public ResponseEntity<?> getRoles() {
+        try {
+            LOGGER.info("Fetching available roles for user");
+            List<Role> roles = Arrays.asList(Role.values());
+            return ResponseEntity.ok(roles);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching available roles", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
