@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
+@ConditionalOnProperty(
+        name = "old.api.enabled",
+        havingValue = "true",
+        matchIfMissing = false
+)
 @Controller
 @AllArgsConstructor
 public class ProfileController {
@@ -56,7 +62,7 @@ public class ProfileController {
         List<TransactionDto> transactions = transactionService.getTransactionsByUserId(userId);
 
         List<NameDto> admins = transactions.stream()
-                .map(t -> transactionService.getNameById(t.getAdminId()))
+                .map(t -> userService.getNameById(t.getAdminId()))
                 .toList();
         model.addAttribute("transactions", transactions);
         model.addAttribute("admins", admins);

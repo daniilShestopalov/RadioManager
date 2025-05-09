@@ -1,6 +1,7 @@
 package cs.vsu.radiomanager.security;
 
 import cs.vsu.radiomanager.model.auth.AuthModel;
+import cs.vsu.radiomanager.model.enumerate.Role;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,5 +57,15 @@ public class JwtFilter extends GenericFilterBean {
         }
 
         return jwtProvider.getUserIdFromToken(token);
+    }
+
+    public Role getRole(HttpServletRequest request) {
+        String token = getTokenFromCookie(request);
+
+        if (token == null) {
+            return null;
+        }
+
+        return jwtProvider.getRoleFromToken(token);
     }
 }

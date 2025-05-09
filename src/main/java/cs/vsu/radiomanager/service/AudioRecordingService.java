@@ -1,5 +1,6 @@
 package cs.vsu.radiomanager.service;
 
+import cs.vsu.radiomanager.config.BaseProperties;
 import cs.vsu.radiomanager.dto.AudioRecordingDto;
 import cs.vsu.radiomanager.mapper.AudioRecordingMapper;
 import cs.vsu.radiomanager.model.AudioRecording;
@@ -17,7 +18,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AudioRecordingService {
 
-    private static final Double SEC_COST = 100.0;
+    private final BaseProperties baseProperties;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AudioRecordingService.class);
 
@@ -121,6 +122,6 @@ public class AudioRecordingService {
 
     public Double getCostByDuration(Double duration) {
 
-        return SEC_COST * duration;
+        return baseProperties.getFilePrice() * duration;
     }
 }

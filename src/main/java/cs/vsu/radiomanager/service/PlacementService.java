@@ -1,5 +1,8 @@
 package cs.vsu.radiomanager.service;
 
+import cs.vsu.radiomanager.config.BaseProperties;
+import cs.vsu.radiomanager.dto.AudioRecordingDto;
+import cs.vsu.radiomanager.dto.BroadcastSlotDto;
 import cs.vsu.radiomanager.dto.PlacementDto;
 import cs.vsu.radiomanager.mapper.PlacementMapper;
 import cs.vsu.radiomanager.model.Placement;
@@ -10,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +23,16 @@ public class PlacementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlacementService.class);
 
+    private final BaseProperties baseProperties;
+
     private final PlacementRep placementRep;
 
     private final PlacementMapper mapper;
+
+    private final AudioRecordingService audioRecordingService;
+
+    private final BroadcastSlotService broadcastSlotService;
+
 
     public List<PlacementDto> getAll() {
         LOGGER.debug("Fetching all placements");
@@ -97,6 +108,37 @@ public class PlacementService {
             LOGGER.error("Failed to delete placement: {}", id, e);
             throw new RuntimeException("Failed to delete placement: " + id, e);
         }
+    }
+
+    public Double getPlacementPrice(PlacementDto placementDto) {
+        LOGGER.debug("Getting a price of placement {}", placementDto);
+        try {
+            BroadcastSlotDto slot = broadcastSlotService.getBroadcastSlotById(placementDto.getBroadcastSlotId());
+            AudioRecordingDto audio = audioRecordingService.getRecordingById(placementDto.getAudioRecordingId());
+
+            Double baseCost = audio.getCost();
+
+            LocalTime slotStart = slot.getStartTime().toLocalTime();
+
+            boolean highPriority = baseProperties.getPriorityHigh().stream()
+                    .anyMatch(p ->
+                            !slotStart.isBefore(p.getStart()) &&
+                                    slotStart.isBefore(p.getEnd())
+                    );
+
+            double finalPrice = highPriority
+                    ? baseCost * baseProperties.getPriorityMultiplier()
+                    : baseCost;
+
+            LOGGER.info("Computed placement price: {} (highPriority={}): base={} * multiplier={}",
+                    finalPrice, highPriority, baseCost, baseProperties.getPriorityMultiplier()
+            );
+            return finalPrice;
+        } catch (Exception e) {
+            LOGGER.error("Failed to get price of placement: {}", placementDto, e);
+            throw new RuntimeException("Failed to get price of placement: " + placementDto, e);
+        }
+
     }
 
 }

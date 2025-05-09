@@ -58,24 +58,25 @@ public class AuthService {
         return exists;
     }
 
+    // TODO Add code for change password
     public boolean updatePasswordByLogin(@NotNull String login, @NotNull String password) {
         LOGGER.info("Updating password by login: {}", login);
         Optional<User> userOptional = userRepository.findByLogin(login);
         if (userOptional.isPresent()) {
-            userService.updatePassword(userOptional.get().getId(), password);
+            boolean success = userService.updatePassword(userOptional.get().getId(), password);
             LOGGER.info("Password updated successfully");
-            return true;
+            return success;
         }
         return false;
     }
 
-    public boolean updatePasswordById(Integer userId, String newPassword) {
+    public boolean updatePasswordById(Long userId, String newPassword) {
         LOGGER.info("Updating password for user ID: {}", userId);
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
-            userService.updatePassword(userOptional.get().getId(), newPassword);
+            boolean success = userService.updatePassword(userOptional.get().getId(), newPassword);
             LOGGER.info("Password updated successfully for user ID: {}", userId);
-            return true;
+            return success;
         }
         LOGGER.warn("User not found with ID: {}", userId);
         return false;

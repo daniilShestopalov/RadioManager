@@ -1,5 +1,7 @@
 package cs.vsu.radiomanager.service;
 
+import cs.vsu.radiomanager.config.SystemEntityProperties;
+import cs.vsu.radiomanager.dto.NameDto;
 import cs.vsu.radiomanager.dto.UserDto;
 import cs.vsu.radiomanager.mapper.UserMapper;
 import cs.vsu.radiomanager.model.User;
@@ -9,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +26,11 @@ public class UserService {
 
     private final UserRep userRep;
 
-    private UserMapper mapper;
+    private final UserMapper mapper;
 
     private final BCryptPasswordEncoder passwordEncoder;
+
+    private final SystemEntityProperties systemEntityProperties;
 
     public List<UserDto> getAllUsers() {
         LOGGER.debug("Fetching all users");
@@ -122,6 +127,38 @@ public class UserService {
     public Role getRoleById(Long id) {
         LOGGER.debug("Getting role by id: {}", id);
         return getUserById(id).getRole();
+    }
+
+    public NameDto getNameById(Long id) {
+        LOGGER.debug("Fetching name by id: {}", id);
+        UserDto userDto = getUserById(id);
+        if (userDto != null) {
+            NameDto nameDto = new NameDto();
+            nameDto.setName(userDto.getName());
+            nameDto.setSurname(userDto.getSurname());
+            return nameDto;
+        }
+        return null;
+    }
+
+
+    public UserDto getSystemEntity() {
+        LOGGER.debug("Fetching system entity");
+        try {
+            String login = systemEntityProperties.getLogin();
+            UserDto systemEntity = getUserByLogin(login);
+            if (systemEntity != null) {
+                LOGGER.debug("Fetched system entity");
+                return systemEntity;
+            }
+
+            LOGGER.error("System entity not found for login: {}", login);
+            throw new RuntimeException("System entity not found for login: " + login);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching system entity", e);
+            throw new RuntimeException("Error fetching system entity", e);
+        }
+
     }
 
 }

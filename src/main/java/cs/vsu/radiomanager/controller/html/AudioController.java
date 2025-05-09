@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@ConditionalOnProperty(
+        name = "old.api.enabled",
+        havingValue = "true",
+        matchIfMissing = false
+)
 @Controller
 @AllArgsConstructor
 public class AudioController {
@@ -64,15 +70,16 @@ public class AudioController {
     public String uploadAudio(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         Long userId = jwtFilter.getUserId(request);
         LOGGER.info("Type is {}", file.getContentType());
-        String filePath = fileService.saveAudio(file);
         Double duration = fileService.getAudioDuration(file);
         AudioRecordingDto audioRecordingDto = new AudioRecordingDto();
         audioRecordingDto.setUserId(userId);
-        audioRecordingDto.setFilePath(filePath);
+        audioRecordingDto.setFilePath(file.getOriginalFilename());
         audioRecordingDto.setDuration(fileService.getAudioDuration(file));
         audioRecordingDto.setCost(audioRecordingService.getCostByDuration(duration));
         audioRecordingDto.setApprovalStatus(ApprovalStatus.PENDING);
-        audioRecordingService.createRecording(audioRecordingDto);
+        AudioRecordingDto created = audioRecordingService.createRecording(audioRecordingDto);
+
+        String filePath = fileService.saveAudio(file, created.getId());
 
         LOGGER.info("Audio file uploaded by user {}: {}", userId, filePath);
         return "redirect:/user/audio";
