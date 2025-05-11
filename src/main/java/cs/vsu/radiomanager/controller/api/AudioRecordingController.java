@@ -22,9 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("/audio-recording")
@@ -43,17 +41,34 @@ public class AudioRecordingController {
         return !userIdFromToken.equals(requestedUserId) && !Role.ADMIN.equals(role);
     }
 
+    private List<CombinedAudioRecordingResponseDto> formCombinedList(List<AudioRecordingDto> audioRecordings) {
+        List<CombinedAudioRecordingResponseDto> responseList = new ArrayList<>(audioRecordings.size());
+        for (AudioRecordingDto recording : audioRecordings) {
+            String uniqueFileName = fileService.generateUniqueFilename(recording.getId(), recording.getFilePath());
+            byte[] fileData = fileService.getAudio(uniqueFileName);
+            String fileContentBase64 = Base64.getEncoder().encodeToString(fileData);
+
+            CombinedAudioRecordingResponseDto dto = new CombinedAudioRecordingResponseDto();
+            dto.setRecording(recording);
+            dto.setFileContentBase64(fileContentBase64);
+
+            responseList.add(dto);
+        }
+        return responseList;
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Get all audio recordings",
             description = "Returns a list of all audio recordings."
     )
-    public ResponseEntity<List<AudioRecordingDto>> getAllAudioRecordings() {
+    public ResponseEntity<?> getAllAudioRecordings() {
         try {
             LOGGER.info("Fetching all audio recordings");
             List<AudioRecordingDto> audioRecordings = audioRecordingService.getAllRecordings();
-            return ResponseEntity.ok(audioRecordings);
+
+            return ResponseEntity.ok(formCombinedList(audioRecordings));
 
         } catch (Exception e) {
             LOGGER.error("Error fetching all audio recordings", e);
@@ -77,7 +92,7 @@ public class AudioRecordingController {
 
             String uniqueFileName = fileService.generateUniqueFilename(id, recording.getFilePath());
             byte[] fileData = fileService.getAudio(uniqueFileName);
-            String fileContentBase64 = java.util.Base64.getEncoder().encodeToString(fileData);
+            String fileContentBase64 = Base64.getEncoder().encodeToString(fileData);
 
             CombinedAudioRecordingResponseDto responseDto = new CombinedAudioRecordingResponseDto();
             responseDto.setFileContentBase64(fileContentBase64);
@@ -112,7 +127,7 @@ public class AudioRecordingController {
 
             List<AudioRecordingDto> recordings = audioRecordingService.getRecordingByUserId(userId);
             LOGGER.info("Fetched {} recordings for user {}", recordings.size(), userId);
-            return ResponseEntity.ok(recordings);
+            return ResponseEntity.ok(formCombinedList(recordings));
         } catch (Exception e) {
             LOGGER.error("Error fetching recordings for user {}", userId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -136,7 +151,7 @@ public class AudioRecordingController {
             }
             List<AudioRecordingDto> recordings = audioRecordingService.getRecordingByStatus(approvalStatus);
             LOGGER.info("Fetched {} recordings with status {}", recordings.size(), approvalStatus);
-            return ResponseEntity.ok(recordings);
+            return ResponseEntity.ok(formCombinedList(recordings));
         } catch (Exception e) {
             LOGGER.error("Error fetching recordings with status {}", status, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -173,7 +188,7 @@ public class AudioRecordingController {
             }
             List<AudioRecordingDto> recordings = audioRecordingService.getRecordingByStatusAndUserId(approvalStatus, userId);
             LOGGER.info("Fetched {} recordings with status {} for user {}", recordings.size(), approvalStatus, userId);
-            return ResponseEntity.ok(recordings);
+            return ResponseEntity.ok(formCombinedList(recordings));
         } catch (Exception e) {
             LOGGER.error("Error fetching recordings with status {} for user {}", status, userId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -211,7 +226,11 @@ public class AudioRecordingController {
             String uniqueFilename = fileService.saveAudio(file, created.getId());
             LOGGER.info("Unique file saved: {}", uniqueFilename);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+            CombinedAudioRecordingResponseDto result = new CombinedAudioRecordingResponseDto();
+            result.setRecording(created);
+            result.setFileContentBase64(Base64.getEncoder().encodeToString(file.getBytes()));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (IllegalArgumentException ex) {
             LOGGER.error("Invalid filename during file upload: {}", ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
