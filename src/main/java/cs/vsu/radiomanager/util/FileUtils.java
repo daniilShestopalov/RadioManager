@@ -1,6 +1,5 @@
 package cs.vsu.radiomanager.util;
 
-import com.mpatric.mp3agic.Mp3File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -10,10 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 @Component
 public class FileUtils {
@@ -40,7 +45,7 @@ public class FileUtils {
         }
     }
 
-    public static double getMp3Duration(MultipartFile file) throws IOException {
+    /*public static double getMp3Duration(MultipartFile file) throws IOException {
 
         Path tempFile = Files.createTempFile(null, ".mp3");
         Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
@@ -57,6 +62,41 @@ public class FileUtils {
         }
 
         return lengthInSeconds;
+    }*/
+
+    public static double getMp3Duration(MultipartFile file) throws IOException {
+        if (!isAudioFile(file)) {
+            throw new IllegalArgumentException(
+                    "Invalid file. Expected audio/mpeg with extension .mp3"
+            );
+        }
+
+        Path tempFile = Files.createTempFile("upload-", ".mp3");
+        try {
+            Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            AudioFileFormat baseFileFormat = AudioSystem.getAudioFileFormat(tempFile.toFile());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> props = baseFileFormat.properties();
+
+            Long microseconds = (Long) props.get("duration");
+            if (microseconds == null) {
+                throw new RuntimeException("Duration property not found in MP3SPI");
+            }
+
+            return Math.round(microseconds / 1_000_000.0);
+        } catch (UnsupportedAudioFileException e) {
+            LOGGER.error("The file is not supported by AudioSystem: {}", file.getOriginalFilename(), e);
+            throw new RuntimeException("Unsupported audio format", e);
+        } finally {
+            // Удаляем временный файл
+            try {
+                Files.deleteIfExists(tempFile);
+            } catch (IOException ex) {
+                LOGGER.warn("Failed to delete a temporary file: {}", tempFile, ex);
+            }
+        }
     }
+
 
 }
