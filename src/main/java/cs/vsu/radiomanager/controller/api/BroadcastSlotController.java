@@ -2,7 +2,6 @@ package cs.vsu.radiomanager.controller.api;
 
 import cs.vsu.radiomanager.dto.AudioRecordingDto;
 import cs.vsu.radiomanager.dto.BroadcastSlotDto;
-import cs.vsu.radiomanager.model.enumerate.Role;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.service.AudioRecordingService;
 import cs.vsu.radiomanager.service.BroadcastSlotService;
@@ -23,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -286,6 +286,9 @@ public class BroadcastSlotController {
             LocalDateTime now = LocalDateTime.now();
             pairs = pairs.stream()
                     .filter(p -> !p.getFirst().isBefore(now))
+                    .sorted(Comparator
+                            .comparing(Pair<LocalDateTime, LocalDateTime>::getFirst)
+                            .thenComparing(Pair::getSecond))
                     .toList();
 
             LOGGER.debug("Mapping time pairs to DTOs for station {}", radioStationId);
@@ -293,6 +296,9 @@ public class BroadcastSlotController {
                     radioStationId,
                     pairs
             );
+
+            LOGGER.debug("Delete slots after start time: {}", dtos);
+            broadcastSlotService.deleteBroadcastSlotsByRadioStationAfterStartTime(radioStationId, now);
 
             LOGGER.debug("Saving {} broadcast slots to DB", dtos.size());
             dtos = broadcastSlotService.createBroadcastSlots(dtos);
