@@ -521,4 +521,22 @@ public class BroadcastSlotController {
         }
     }
 
+    @GetMapping("/priority-multiplier")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get priority multiplier",
+            description = "Returns the multiplier factor for the given priority flag (high priority or normal)."
+    )
+    public ResponseEntity<Double> getPriorityMultiplier(@RequestParam boolean highPriority) {
+        try {
+            LOGGER.info("Fetching priority multiplier for highPriority={}", highPriority);
+            double multiplier = broadcastSlotService.getPriorityMultiplier(highPriority);
+            LOGGER.debug("Computed multiplier: {}", multiplier);
+            return ResponseEntity.ok(multiplier);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching priority multiplier for highPriority={}", highPriority, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

@@ -302,4 +302,15 @@ public class BroadcastSlotService {
 
     }
 
+    public double getPriorityMultiplier(boolean priority) {
+        try {
+            LOGGER.debug("Fetching priority multiplier for priority: {}", priority);
+            return priority ? baseProperties.getPriorityMultiplier() : 1.0;
+
+        } catch (Exception e) {
+            LOGGER.error("Error fetching priority multiplier", e);
+            throw new RuntimeException("Error fetching priority multiplier", e);
+        }
+    }
+
 }
