@@ -6,6 +6,7 @@ import cs.vsu.radiomanager.mapper.BroadcastSlotMapper;
 import cs.vsu.radiomanager.model.BroadcastSlot;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.repository.BroadcastSlotRep;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class BroadcastSlotService {
 
@@ -165,7 +167,7 @@ public class BroadcastSlotService {
         LOGGER.debug("Deleting broadcast slots of radio station {} after start time: {}",
                 radioStationId, startTime);
         try {
-            if (broadcastSlotRep.deleteAllByRadioStationIdAndStartTimeAfter(radioStationId, startTime)) {
+            if (broadcastSlotRep.deleteAllByRadioStationIdAndStartTimeAfter(radioStationId, startTime) > 0) {
                 LOGGER.info("Deleted broadcast slots of radio station {} after start time: {}",
                         radioStationId, startTime);
                 return true;

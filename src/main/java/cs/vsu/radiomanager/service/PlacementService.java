@@ -7,6 +7,7 @@ import cs.vsu.radiomanager.dto.PlacementDto;
 import cs.vsu.radiomanager.mapper.PlacementMapper;
 import cs.vsu.radiomanager.model.Placement;
 import cs.vsu.radiomanager.repository.PlacementRep;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class PlacementService {
 
