@@ -14,12 +14,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @Service
 public class FileService {
+
+    private static final DateTimeFormatter XLSX_DTF = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss",
+            Locale.of("ru","RU"));
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileService.class);
 
@@ -112,6 +117,8 @@ public class FileService {
         try {
             LOGGER.info("Starting to read Excel file for time intervals");
 
+
+
             List<Pair<LocalDateTime, LocalDateTime>> timeList = new ArrayList<>();
             DataFormatter dataFormatter = new DataFormatter();
             try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
@@ -147,8 +154,8 @@ public class FileService {
                     LOGGER.debug("Row {}: Start string = '{}', End string = '{}'", rowNum, startStr, endStr);
 
                     try {
-                        LocalDateTime startTime = LocalDateTime.parse(startStr);
-                        LocalDateTime endTime = LocalDateTime.parse(endStr);
+                        LocalDateTime startTime = LocalDateTime.parse(startStr, XLSX_DTF);
+                        LocalDateTime endTime = LocalDateTime.parse(endStr, XLSX_DTF);
 
                         timeList.add(Pair.of(startTime, endTime));
                     } catch (Exception e) {

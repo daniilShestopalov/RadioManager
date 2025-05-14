@@ -6,6 +6,7 @@ import cs.vsu.radiomanager.mapper.BroadcastSlotMapper;
 import cs.vsu.radiomanager.model.BroadcastSlot;
 import cs.vsu.radiomanager.model.enumerate.Status;
 import cs.vsu.radiomanager.repository.BroadcastSlotRep;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class BroadcastSlotService {
 
@@ -165,7 +167,7 @@ public class BroadcastSlotService {
         LOGGER.debug("Deleting broadcast slots of radio station {} after start time: {}",
                 radioStationId, startTime);
         try {
-            if (broadcastSlotRep.deleteAllByRadioStationIdAndStartTimeAfter(radioStationId, startTime)) {
+            if (broadcastSlotRep.deleteAllByRadioStationIdAndStartTimeAfter(radioStationId, startTime) > 0) {
                 LOGGER.info("Deleted broadcast slots of radio station {} after start time: {}",
                         radioStationId, startTime);
                 return true;
@@ -298,6 +300,17 @@ public class BroadcastSlotService {
             throw new RuntimeException("Error creating broadcast slot dto", e);
         }
 
+    }
+
+    public double getPriorityMultiplier(boolean priority) {
+        try {
+            LOGGER.debug("Fetching priority multiplier for priority: {}", priority);
+            return priority ? baseProperties.getPriorityMultiplier() : 1.0;
+
+        } catch (Exception e) {
+            LOGGER.error("Error fetching priority multiplier", e);
+            throw new RuntimeException("Error fetching priority multiplier", e);
+        }
     }
 
 }

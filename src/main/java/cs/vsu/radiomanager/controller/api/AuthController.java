@@ -10,6 +10,7 @@ import cs.vsu.radiomanager.security.JwtFilter;
 import cs.vsu.radiomanager.security.JwtProvider;
 import cs.vsu.radiomanager.service.AuthService;
 import cs.vsu.radiomanager.service.ResetService;
+import cs.vsu.radiomanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,8 @@ public class AuthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     private AuthService authService;
+
+    private UserService userService;
 
     private JwtProvider jwtProvider;
 
@@ -204,5 +208,35 @@ public class AuthController {
         }
 
     }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Get current user info",
+            description = "Retrieves the currently authenticated user's information based on the JWT token stored in the HTTP-only cookie."
+    )
+    public ResponseEntity<UserDto> getCurrentUser(HttpServletRequest request) {
+        try {
+            LOGGER.info("Fetching current user from JWT cookie");
+            Long userId = jwtFilter.getUserId(request);
+            if (userId == null) {
+                LOGGER.warn("No user ID found in JWT token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            UserDto userDto = userService.getUserById(userId);
+            if (userDto == null) {
+                LOGGER.warn("User not found with ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            LOGGER.info("Fetched current user: {}", userDto);
+            return ResponseEntity.ok(userDto);
+        } catch (Exception e) {
+            LOGGER.error("Error fetching current user info", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 }

@@ -6,6 +6,7 @@ import cs.vsu.radiomanager.mapper.AudioRecordingMapper;
 import cs.vsu.radiomanager.model.AudioRecording;
 import cs.vsu.radiomanager.model.enumerate.ApprovalStatus;
 import cs.vsu.radiomanager.repository.AudioRecordingRep;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class AudioRecordingService {
 
