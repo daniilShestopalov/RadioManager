@@ -23,6 +23,7 @@ public class SystemEntityConfig {
         return args -> {
             if (!authService.checkEmailExists(systemEntityProperties.getLogin())) {
                 UserDto systemEntity = new UserDto();
+                systemEntity.setId((long) 2147483647);
                 systemEntity.setLogin(systemEntityProperties.getLogin());
                 systemEntity.setPassword(systemEntityProperties.getPassword());
                 systemEntity.setName(systemEntityProperties.getName());
