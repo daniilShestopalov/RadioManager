@@ -95,7 +95,7 @@ public class AuthController {
             summary = "Verify code",
             description = "Validates the verification code by extracting the user ID from the token. Returns a success message if valid, or an error otherwise."
     )
-    public ResponseEntity<?> codeVerification(@RequestBody CodeDto codeDto) {
+    public ResponseEntity<?> codeVerification(@RequestBody @Valid CodeDto codeDto) {
         try {
             LOGGER.info("Starting verification for code: {}", codeDto.getCode());
             Long userId = jwtProvider.getUserIdFromToken(codeDto.getCode());

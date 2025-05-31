@@ -4,6 +4,7 @@ import cs.vsu.radiomanager.dto.RadioStationDto;
 import cs.vsu.radiomanager.model.RadioStation;
 import cs.vsu.radiomanager.service.RadioStationService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +145,7 @@ public class RadioStationController {
             summary = "Create new radio station",
             description = "Creates a new radio station with the provided details."
     )
-    public ResponseEntity<?> createRadioStation(@RequestBody RadioStationDto radioStationDto) {
+    public ResponseEntity<?> createRadioStation(@RequestBody @Valid RadioStationDto radioStationDto) {
         try {
             LOGGER.info("Creating radio station: {}", radioStationDto);
             RadioStationDto createdStation = radioStationService.createRadioStation(radioStationDto);
@@ -161,7 +162,7 @@ public class RadioStationController {
             summary = "Update radio station",
             description = "Updates an existing radio station with the provided details."
     )
-    public ResponseEntity<?> updateRadioStation(@RequestBody RadioStationDto radioStationDto) {
+    public ResponseEntity<?> updateRadioStation(@RequestBody @Valid RadioStationDto radioStationDto) {
         try {
             LOGGER.info("Updating radio station: {}", radioStationDto);
             RadioStationDto updatedStation = radioStationService.updateRadioStation(radioStationDto);

@@ -3,6 +3,7 @@ package cs.vsu.radiomanager.controller.api;
 import cs.vsu.radiomanager.dto.CityDto;
 import cs.vsu.radiomanager.service.CityService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +104,7 @@ public class CityController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new city", description = "Creates a new city")
-    public ResponseEntity<CityDto> createCity(@RequestBody CityDto cityDto) {
+    public ResponseEntity<CityDto> createCity(@RequestBody @Valid CityDto cityDto) {
         try {
             LOGGER.info("Creating city: {}", cityDto);
             CityDto createdCity = cityService.createCity(cityDto);
@@ -117,7 +118,7 @@ public class CityController {
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update an existing city", description = "Updates a city")
-    public ResponseEntity<CityDto> updateCity(@RequestBody CityDto cityDto) {
+    public ResponseEntity<CityDto> updateCity(@RequestBody @Valid CityDto cityDto) {
         try {
             LOGGER.info("Updating city: {}", cityDto);
             CityDto updatedCity = cityService.updateCity(cityDto);
