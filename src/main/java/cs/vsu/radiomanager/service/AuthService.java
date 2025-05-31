@@ -58,7 +58,6 @@ public class AuthService {
         return exists;
     }
 
-    // TODO Add code for change password
     public boolean updatePasswordByLogin(@NotNull String login, @NotNull String password) {
         LOGGER.info("Updating password by login: {}", login);
         Optional<User> userOptional = userRepository.findByLogin(login);
