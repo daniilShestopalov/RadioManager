@@ -159,7 +159,7 @@ public class AudioRecordingController {
     }
 
     @GetMapping("/status_user")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @Operation(
             summary = "Get audio recordings by approval status and user ID",
             description = "Returns audio recordings filtered by approval status and user ID extracted from request headers. Headers: 'approvalStatus' and 'userId'."
