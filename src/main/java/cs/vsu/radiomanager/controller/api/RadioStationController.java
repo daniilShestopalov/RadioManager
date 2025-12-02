@@ -34,7 +34,7 @@ public class RadioStationController {
     public ResponseEntity<?> getAllRadioStations() {
         try {
             LOGGER.info("Fetching all radio stations");
-            List<RadioStation> stations = radioStationService.getAllRadioStation();
+            List<RadioStationDto> stations = radioStationService.getAllRadioStation();
             return ResponseEntity.ok(stations);
         } catch (Exception e) {
             LOGGER.error("Error fetching all radio stations", e);

@@ -23,9 +23,9 @@ public class RadioStationService {
 
     private final RadioStationMapper mapper;
 
-    public List<RadioStation> getAllRadioStation() {
+    public List<RadioStationDto> getAllRadioStation() {
         LOGGER.debug("Fetching all radio stations");
-        return radioStationRep.findAll();
+        return mapper.toDtoList(radioStationRep.findAll());
     }
 
     public RadioStationDto getRadioStationById(Long id) {
